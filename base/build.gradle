@@ -1,0 +1,91 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+
+def depend = rootProject.ext.dependencies
+
+android {
+    compileSdk unitCompileSdk
+
+    defaultConfig {
+        minSdk unitMinSdk
+        targetSdk unitTargetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+    }
+}
+
+dependencies {
+
+    api depend["core"]
+    api depend["appcompat"]
+    api depend["material"]
+    testImplementation depend["junit"]
+    androidTestImplementation depend["testJunit"]
+    androidTestImplementation depend["testEspresso"]
+
+    androidTestImplementation depend["composeTestEspresso"]
+    api depend["composeUI"]
+    api depend["composeMaterial"]
+    api depend["composeUIToolingPreview"]
+    debugImplementation depend["composeUITooling"]
+    api depend["composeLiveData"]
+    api depend["composeNavigation"]
+
+    implementation depend["exifinterface"]
+    api depend["activity"]
+    api depend["eventBus"]
+
+    api depend["coil"]
+    api depend["coilGif"]
+    api depend["coilVideo"]
+    api depend["coilCompose"]
+
+    api depend["lifecycleRuntime"]
+    api depend["lifecycle"]
+    api depend["lifecycleVM"]
+    api depend["lifecycleLD"]
+    api depend["lifecycleVMSaveState"]
+    kapt depend["lifecycleCompiler"]
+    // 替代SP
+    api depend["datastore"]
+
+    //协程
+    api depend["kotlinCoroutinesCore"]
+    api depend["kotlinCoroutinesAndroid"]
+
+    api depend["accompanistNavigation"]
+    api depend["accompanistSwiperefresh"]
+    api depend["accompanistPager"]
+    api depend["accompanistPagerIndicators"]
+    api depend["accompanistPlaceholderMaterial"]
+    api depend["accompanistPlaceholder"]
+    api depend["accompanistDrawablepainter"]
+    api depend["accompanistFlowlayout"]
+    api depend["accompanistPermissions"]
+    api depend["accompanistWebview"]
+    api depend["accompanistSystemuicontroller"]
+}
