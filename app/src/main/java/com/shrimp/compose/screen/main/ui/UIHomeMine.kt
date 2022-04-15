@@ -1,4 +1,4 @@
-package com.shrimp.compose.ui.view
+package com.shrimp.compose.screen.main.ui
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
@@ -30,7 +30,7 @@ import coil.request.ImageRequest
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.AppFunInfo
 import com.shrimp.compose.bean.UserInfo
-import com.shrimp.compose.vm.VMHomeMine
+import com.shrimp.compose.screen.main.vm.VMHomeMine
 
 /**
  * Created by chasing on 2022/3/22.

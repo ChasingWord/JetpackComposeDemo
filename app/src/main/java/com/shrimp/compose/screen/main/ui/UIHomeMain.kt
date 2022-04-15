@@ -1,4 +1,4 @@
-package com.shrimp.compose.ui.view
+package com.shrimp.compose.screen.main.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.*
@@ -40,9 +40,10 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.*
-import com.shrimp.base.utils.SystemStatusBarTransparent
+import com.shrimp.compose.ui.view.TopicItem
 import com.shrimp.compose.util.floorMod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

@@ -1,10 +1,10 @@
-package com.shrimp.compose.vm
+package com.shrimp.compose.screen.main.vm
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.shrimp.base.view.BaseViewModel
 import com.shrimp.compose.bean.UserInfo
-import com.shrimp.compose.dp.DPHomeMine
+import com.shrimp.compose.screen.main.dp.DPHomeMine
 
 /**
  * Created by chasing on 2022/4/14.

@@ -1,4 +1,4 @@
-package com.shrimp.compose.ui.view
+package com.shrimp.compose.screen.main.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

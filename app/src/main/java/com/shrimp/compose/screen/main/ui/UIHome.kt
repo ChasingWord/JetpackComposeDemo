@@ -1,4 +1,4 @@
-package com.shrimp.compose.ui.view
+package com.shrimp.compose.screen.main.ui
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -25,7 +25,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.shrimp.compose.R
-import com.shrimp.compose.view.main.MainVM
+import com.shrimp.compose.screen.main.MainVMManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Home(mainVM: MainVM, lifecycleOwner: LifecycleOwner) {
+fun Home(mainVM: MainVMManager, lifecycleOwner: LifecycleOwner) {
     Column(verticalArrangement = Arrangement.Bottom,
         modifier = Modifier
             .fillMaxWidth()

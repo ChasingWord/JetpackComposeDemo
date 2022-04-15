@@ -1,4 +1,4 @@
-package com.shrimp.compose.view.main
+package com.shrimp.compose.screen.main
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -13,13 +13,13 @@ import com.shrimp.compose.ui.view.Home
 
 class MainActivity : BaseActivity() {
 
-    private lateinit var mainVM: MainVM
+    private lateinit var mainVM: MainVMManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         context = this
 
-        mainVM = MainVM()
+        mainVM = MainVMManager()
         mainVM.initVM(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
