@@ -1,26 +1,27 @@
-package com.shrimp.compose
+package com.shrimp.compose.view.main
 
-import android.content.Context
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import com.shrimp.base.view.BaseActivity
 import com.shrimp.compose.ui.theme.JepackComposeDemoTheme
 import com.shrimp.compose.ui.view.Home
 
-class MainActivity : ComponentActivity() {
+class MainActivity : BaseActivity() {
 
-    private lateinit var context: Context
+    private lateinit var mainVM: MainVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         context = this
+
+        mainVM = MainVM()
+        mainVM.initVM(this)
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             JepackComposeDemoTheme {
@@ -28,15 +29,9 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background) {
-                    Home()
+                    Home(mainVM, this)
                 }
             }
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun CheckPreview() {
-    Home()
 }

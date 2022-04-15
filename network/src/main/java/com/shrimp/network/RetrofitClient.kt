@@ -1,6 +1,7 @@
 package com.shrimp.network
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.shrimp.base.BuildConfig
 import com.shrimp.network.utils.EncryptionInterceptor
 import com.shrimp.network.utils.JsonConverterFactory
 import com.shrimp.network.utils.LoggerInterceptor

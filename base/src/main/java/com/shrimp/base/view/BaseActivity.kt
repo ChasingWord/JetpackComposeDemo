@@ -4,26 +4,24 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Window
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.shrimp.base.utils.ActivityUtil
 import com.shrimp.base.utils.FixMemLeakUtil
-import com.shrimp.base.utils.OneClickUtil
 import com.shrimp.base.widgets.dialog.ProgressDialog
 
 /**
  * Created by chasing on 2021/10/19.
  */
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : FragmentActivity() {
     protected lateinit var context: Activity
-    protected var oneClickUtil = OneClickUtil()
     protected var isPause = false
 
     private lateinit var dialog: ProgressDialog
@@ -40,11 +38,6 @@ abstract class BaseActivity : AppCompatActivity() {
             if (intent.component != null && ActivityUtil.oneClickUtil.check(intent.component?.className)) return
             context.startActivity(intent)
         }
-
-        fun startForResult(activity: Activity, intent: Intent, requestCode: Int) {
-            if (intent.component != null && ActivityUtil.oneClickUtil.check(intent.component?.className)) return
-            activity.startActivityForResult(intent, requestCode)
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,17 +47,10 @@ abstract class BaseActivity : AppCompatActivity() {
 
         dialog = ProgressDialog()
         dialog.isCancelable = true
-
-
-
-        initView()
-        initDataObserve()
-
-        loadData()
     }
 
     // 针对单Aty多页面的情况，一个页面对应一个ViewModel维护独立的数据
-    fun addViewModel(vm: BaseActivityModel) {
+    fun addViewModel(vm: BaseViewModel) {
         vm.dialogShow.observe(this) { isShow ->
             if (isShow)
                 showLoading()
@@ -73,24 +59,6 @@ abstract class BaseActivity : AppCompatActivity() {
         }
         vm.handleIntent(intent)
         lifecycle.addObserver(vm)
-    }
-
-    /**
-     * 初始化视图
-     */
-    abstract fun initView()
-
-    /**
-     * 初始化ViewModel的数据监听
-     */
-    abstract fun initDataObserve()
-
-    /**
-     * 需要使用Activity进行加载数据的情形，例如：加载本地相册需要使用FragementActivity
-     * 其它数据加载写在ViewModel
-     */
-    open fun loadData() {
-
     }
 
     override fun onResume() {
@@ -138,35 +106,40 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        for (i in grantResults.indices) {
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
-                    // 被永久拒绝--需要显示请求理由
-                    var toastString: String
-                    when (permissions[i]) {
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE -> {
-                            toastString = "请前往手机系统设置界面进行设置存储权限！"
+    fun startActivityForResult(clazz: Class<*>) {
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()
+        ) {
+            val data = it.data
+            val resultCode = it.resultCode
+        }.launch(Intent(context, clazz))
+    }
+
+    fun registerPermissionsResult() {
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            for (entry in it) {
+                if (!entry.value) {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this, entry.key)) {
+                        // 被永久拒绝--需要显示请求理由
+                        var toastString: String
+                        when (entry.key) {
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE -> {
+                                toastString = "请前往手机系统设置界面进行设置存储权限！"
+                            }
+                            Manifest.permission.CAMERA -> {
+                                toastString = "请前往手机系统设置界面进行设置拍照权限！"
+                            }
+                            Manifest.permission.CALL_PHONE -> {
+                                toastString = "请前往手机系统设置界面进行设置拨打电话权限！"
+                            }
+                            Manifest.permission.WRITE_CALENDAR -> {
+                                toastString = "请前往手机系统设置界面进行设置读写日历权限！"
+                            }
+                            else -> {
+                                toastString = "请前往手机系统设置界面进行设置相应权限！"
+                            }
                         }
-                        Manifest.permission.CAMERA -> {
-                            toastString = "请前往手机系统设置界面进行设置拍照权限！"
-                        }
-                        Manifest.permission.CALL_PHONE -> {
-                            toastString = "请前往手机系统设置界面进行设置拨打电话权限！"
-                        }
-                        Manifest.permission.WRITE_CALENDAR -> {
-                            toastString = "请前往手机系统设置界面进行设置读写日历权限！"
-                        }
-                        else -> {
-                            toastString = "请前往手机系统设置界面进行设置相应权限！"
-                        }
+                        ActivityUtil.showToast(this, toastString)
                     }
-                    ActivityUtil.showToast(this, toastString)
                 }
             }
         }

@@ -15,15 +15,17 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.MutableLiveData
-import androidx.navigation.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.get
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.shrimp.compose.R
+import com.shrimp.compose.view.main.MainVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,15 +33,9 @@ import kotlinx.coroutines.launch
 /**
  * Created by chasing on 2022/3/22.
  */
-@Preview
-@Composable
-fun HomePreview() {
-    Home()
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Home() {
+fun Home(mainVM: MainVM, lifecycleOwner: LifecycleOwner) {
     Column(verticalArrangement = Arrangement.Bottom,
         modifier = Modifier
             .fillMaxWidth()
@@ -61,7 +57,7 @@ fun Home() {
             }
         ) {
             composable("home") { HomeMain() }
-            composable("community", ) { HomeCommunity() }
+            composable("community") { HomeCommunity() }
             composable(route = "message") {
                 Text(text = "消息",
                     modifier = Modifier
@@ -71,7 +67,7 @@ fun Home() {
                     fontSize = 17.sp,
                     color = colorResource(id = R.color.color_2c2c2c))
             }
-            composable("mine") { HomeMine(hadSign = MutableLiveData(false)) }
+            composable("mine") { HomeMine(mainVM.vmHomeMine, lifecycleOwner) }
         }
         Divider(
             color = colorResource(id = R.color.color_f1f3f5),

@@ -10,9 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,40 +20,36 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LifecycleOwner
 import coil.compose.AsyncImage
 import coil.load
 import coil.request.ImageRequest
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.AppFunInfo
+import com.shrimp.compose.bean.UserInfo
+import com.shrimp.compose.vm.VMHomeMine
 
 /**
  * Created by chasing on 2022/3/22.
  */
-@Preview(showSystemUi = true)
 @Composable
-fun HomeMinePreview() {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight()
-        .background(colorResource(id = R.color.color_f5f5f5))) {
-        HomeMine(hadSign = MutableLiveData())
+fun HomeMine(vmHomeMine: VMHomeMine, lifecycleOwner: LifecycleOwner) {
+    var userInfo by remember { mutableStateOf(UserInfo()) }
+    vmHomeMine.userInfo.removeObservers(lifecycleOwner)
+    vmHomeMine.userInfo.observe(lifecycleOwner) {
+        userInfo = it.copy()
     }
-}
 
-@Composable
-fun HomeMine(hadSign: MutableLiveData<Boolean>) {
     val context = LocalContext.current
     LazyColumn(modifier = Modifier.background(colorResource(id = R.color.color_f5f5f5))) {
         item {
-            HomeMineUserInfo(hadSign = hadSign)
+            HomeMineUserInfo(vmHomeMine, userInfo)
         }
         item {
-            HomeMineDynamicInfo()
+            HomeMineDynamicInfo(userInfo)
         }
         item {
             Text(text = "资源管理",
@@ -96,7 +90,7 @@ fun HomeMine(hadSign: MutableLiveData<Boolean>) {
 private lateinit var vipBgImageView: ImageView
 
 @Composable
-fun HomeMineUserInfo(hadSign: MutableLiveData<Boolean>) {
+fun HomeMineUserInfo(VMHomeMine: VMHomeMine, userInfo: UserInfo) {
     val context = LocalContext.current
     Box {
         Image(painter = painterResource(id = R.mipmap.personal_top_bg),
@@ -106,7 +100,6 @@ fun HomeMineUserInfo(hadSign: MutableLiveData<Boolean>) {
                 .aspectRatio(1080 / 474f),
             contentScale = ContentScale.FillWidth)
 
-        val hadSignState by hadSign.observeAsState(false)
         Row(Modifier
             .padding(20.dp, 0.dp, 20.dp, 0.dp)
             .statusBarsPadding(),
@@ -132,12 +125,12 @@ fun HomeMineUserInfo(hadSign: MutableLiveData<Boolean>) {
             }
 
             Surface(shape = RoundedCornerShape(5.dp), color = colorResource(R.color.color_ff609d)) {
-                Text(text = if (hadSignState == true) "已签到" else "签到",
+                Text(text = if (userInfo.hadSign) "已签到" else "签到",
                     fontSize = 13.sp,
                     color = Color.White,
                     modifier = Modifier
                         .clickable {
-                            hadSign.value = true
+                            VMHomeMine.refresh()
                             Toast
                                 .makeText(context, "签到了", Toast.LENGTH_SHORT)
                                 .show()
@@ -184,14 +177,16 @@ fun HomeMineUserInfo(hadSign: MutableLiveData<Boolean>) {
 }
 
 @Composable
-fun HomeMineDynamicInfo() {
+fun HomeMineDynamicInfo(userInfo: UserInfo) {
     Row(verticalAlignment = Alignment.Bottom) {
         Column(horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f)
                 .padding(0.dp, 10.dp)) {
-            Text(text = "720", modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
-                fontWeight = FontWeight.Bold, fontSize = 15.sp,
+            Text(text = userInfo.dynamicCount.toString(),
+                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
                 color = colorResource(id = R.color.color_2c2c2c))
             Text(text = "动态", fontSize = 11.sp, color = colorResource(id = R.color.color_aeaeae))
         }
@@ -199,8 +194,10 @@ fun HomeMineDynamicInfo() {
             modifier = Modifier
                 .weight(1f)
                 .padding(0.dp, 10.dp)) {
-            Text(text = "0", modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
-                fontWeight = FontWeight.Bold, fontSize = 15.sp,
+            Text(text = userInfo.focusCount.toString(),
+                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
                 color = colorResource(id = R.color.color_2c2c2c))
             Text(text = "关注", fontSize = 11.sp, color = colorResource(id = R.color.color_aeaeae))
         }
@@ -208,8 +205,10 @@ fun HomeMineDynamicInfo() {
             modifier = Modifier
                 .weight(1f)
                 .padding(0.dp, 10.dp)) {
-            Text(text = "20", modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
-                fontWeight = FontWeight.Bold, fontSize = 15.sp,
+            Text(text = userInfo.fansCount.toString(),
+                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
                 color = colorResource(id = R.color.color_2c2c2c))
             Text(text = "粉丝", fontSize = 11.sp, color = colorResource(id = R.color.color_aeaeae))
         }

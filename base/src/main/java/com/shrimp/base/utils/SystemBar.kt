@@ -18,7 +18,7 @@ fun SystemStatusBarChangeColor(color: Color, isShowDarkIcon: Boolean) {
     val systemUiController = rememberSystemUiController()
     SideEffect {
         // Update the system bars to be translucent
-        systemUiController.setSystemBarsColor(color, isShowDarkIcon)
+        systemUiController.setStatusBarColor(color, isShowDarkIcon)
     }
 }
 
@@ -31,7 +31,7 @@ fun SystemStatusBarTransparent(isShowDarkIcon: Boolean) {
     val systemUiController = rememberSystemUiController()
     SideEffect {
         // Update the system bars to be translucent
-        systemUiController.setSystemBarsColor(Color.Transparent, isShowDarkIcon)
+        systemUiController.setStatusBarColor(Color.Transparent, isShowDarkIcon)
     }
 }
 
