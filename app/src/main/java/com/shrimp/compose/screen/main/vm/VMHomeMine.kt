@@ -1,9 +1,9 @@
 package com.shrimp.compose.screen.main.vm
 
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
 import com.shrimp.base.view.BaseViewModel
 import com.shrimp.compose.bean.UserInfo
+import com.shrimp.compose.engine.GlobalInfoManager
 import com.shrimp.compose.screen.main.dp.DPHomeMine
 
 /**
@@ -11,16 +11,14 @@ import com.shrimp.compose.screen.main.dp.DPHomeMine
  */
 class VMHomeMine(application: Application) : BaseViewModel(application) {
 
-    val userInfo = MutableLiveData(UserInfo())
-
     private val dpHomeMine: DPHomeMine = DPHomeMine()
 
     fun refresh() {
-        val value = userInfo.value ?: UserInfo()
+        val value = GlobalInfoManager.userInfo.value ?: UserInfo()
         value.dynamicCount = 100
         value.focusCount = 999
         value.fansCount = 99
         value.hadSign = true
-        userInfo.value = value
+        GlobalInfoManager.userInfo.value = value
     }
 }

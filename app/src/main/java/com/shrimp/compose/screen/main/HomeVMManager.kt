@@ -7,7 +7,7 @@ import com.shrimp.compose.screen.main.vm.VMHomeMine
 /**
  * Created by chasing on 2022/4/15.
  */
-class MainVMManager {
+class HomeVMManager {
     lateinit var vmHomeMine: VMHomeMine
 
     fun initVM(activity: BaseActivity) {

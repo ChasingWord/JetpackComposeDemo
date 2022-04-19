@@ -23,23 +23,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.LifecycleOwner
 import coil.compose.AsyncImage
 import coil.load
 import coil.request.ImageRequest
+import com.shrimp.base.view.BaseActivity
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.AppFunInfo
 import com.shrimp.compose.bean.UserInfo
+import com.shrimp.compose.engine.GlobalInfoManager
 import com.shrimp.compose.screen.main.vm.VMHomeMine
 
 /**
  * Created by chasing on 2022/3/22.
  */
 @Composable
-fun HomeMine(vmHomeMine: VMHomeMine, lifecycleOwner: LifecycleOwner) {
+fun HomeMine(vmHomeMine: VMHomeMine, activity: BaseActivity) {
     var userInfo by remember { mutableStateOf(UserInfo()) }
-    vmHomeMine.userInfo.removeObservers(lifecycleOwner)
-    vmHomeMine.userInfo.observe(lifecycleOwner) {
+    GlobalInfoManager.userInfo.removeObservers(activity)
+    GlobalInfoManager.userInfo.observe(activity) {
         userInfo = it.copy()
     }
 
@@ -90,7 +91,7 @@ fun HomeMine(vmHomeMine: VMHomeMine, lifecycleOwner: LifecycleOwner) {
 private lateinit var vipBgImageView: ImageView
 
 @Composable
-fun HomeMineUserInfo(VMHomeMine: VMHomeMine, userInfo: UserInfo) {
+fun HomeMineUserInfo(vmHomeMine: VMHomeMine, userInfo: UserInfo) {
     val context = LocalContext.current
     Box {
         Image(painter = painterResource(id = R.mipmap.personal_top_bg),
@@ -130,7 +131,7 @@ fun HomeMineUserInfo(VMHomeMine: VMHomeMine, userInfo: UserInfo) {
                     color = Color.White,
                     modifier = Modifier
                         .clickable {
-                            VMHomeMine.refresh()
+                            vmHomeMine.refresh()
                             Toast
                                 .makeText(context, "签到了", Toast.LENGTH_SHORT)
                                 .show()

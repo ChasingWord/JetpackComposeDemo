@@ -1,13 +1,19 @@
 package com.shrimp.base.utils
 
+import android.view.Window
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+
+fun setDecorFitsSystemWindows(window: Window){
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+}
 
 /**
  * Created by chasing on 2022/3/24.

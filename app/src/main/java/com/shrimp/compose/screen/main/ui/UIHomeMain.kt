@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -43,7 +45,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.*
-import com.shrimp.compose.ui.view.TopicItem
+import com.shrimp.compose.ui.widgets.TopicItem
 import com.shrimp.compose.util.floorMod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -57,20 +59,15 @@ import kotlin.math.ceil
 @Preview
 @Composable
 fun HomeMainPreview() {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight()
-        .background(colorResource(id = R.color.color_f5f5f5))) {
-        HomeMain()
-
-    }
+    val navCtrl = rememberNavController()
+    HomeMain(navCtrl)
 }
 
 var HomeMainTotalScroll = MutableLiveData(0f)
 var HomeMainScrollState: LazyListState? = null
 
 @Composable
-fun HomeMain() {
+fun HomeMain(navCtrl: NavHostController) {
     val dp100ToPx = with(LocalDensity.current) { 100.dp.toPx() }
 
     Box(modifier = Modifier.background(color = colorResource(id = R.color.white))) {
@@ -108,7 +105,7 @@ fun HomeMain() {
                     HomeMainResource()
                 }
                 items(list.size) {
-                    TopicItem(topicData = list[it])
+                    TopicItem(navCtrl, list[it])
                 }
             }
         }

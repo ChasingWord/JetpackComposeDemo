@@ -77,6 +77,7 @@ dependencies {
     api depend["kotlinCoroutinesCore"]
     api depend["kotlinCoroutinesAndroid"]
 
+    api depend["accompanistInsets"]
     api depend["accompanistNavigation"]
     api depend["accompanistSwiperefresh"]
     api depend["accompanistPager"]

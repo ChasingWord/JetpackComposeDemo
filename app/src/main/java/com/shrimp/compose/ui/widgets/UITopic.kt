@@ -1,4 +1,4 @@
-package com.shrimp.compose.ui.view
+package com.shrimp.compose.ui.widgets
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -25,13 +25,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.shrimp.compose.util.GenericTools
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.TOPIC_DATA_TYPE_IMAGE
 import com.shrimp.compose.bean.TOPIC_DATA_TYPE_NEWS
 import com.shrimp.compose.bean.TOPIC_DATA_TYPE_RESOURCE
 import com.shrimp.compose.bean.TopicData
+import com.shrimp.compose.screen.common.RouteName
+import com.shrimp.compose.util.GenericTools
+import com.shrimp.compose.util.RouteUtils
 
 /**
  * Created by chasing on 2022/3/23.
@@ -39,14 +43,15 @@ import com.shrimp.compose.bean.TopicData
 @Preview
 @Composable
 fun TopicItemPreview() {
-    TopicItem(TopicData(0, false))
+    val navController = rememberNavController()
+    TopicItem(navController, TopicData(0, false))
 }
 
 @Composable
-fun TopicItem(topicData: TopicData) {
+fun TopicItem(navController: NavHostController, topicData: TopicData) {
     Box {
         Column {
-            TopicItemUserInfo(topicData = topicData)
+            TopicItemUserInfo(navController, topicData)
             Text(text = "内容.....",
                 fontSize = 15.sp,
                 color = colorResource(id = R.color.color_282a2e),
@@ -64,10 +69,13 @@ fun TopicItem(topicData: TopicData) {
 }
 
 @Composable
-fun TopicItemUserInfo(topicData: TopicData) {
+fun TopicItemUserInfo(navController: NavHostController, topicData: TopicData) {
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(13.dp, 20.dp, 13.dp, 0.dp)) {
         Image(modifier = Modifier
+            .clickable {
+                RouteUtils.navTo(navController, RouteName.COMMUNITY_PERSONAL, 311)
+            }
             .size(31.dp)
             .clip(CircleShape),
             painter = painterResource(id = R.mipmap.default_pic), contentDescription = null)

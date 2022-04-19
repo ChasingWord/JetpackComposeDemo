@@ -59,6 +59,7 @@ buildscript {
 
                 eventBus                      : "org.greenrobot:eventbus:3.3.1",
 
+                accompanistInsets             : "com.google.accompanist:accompanist-insets:$accompanist",
                 accompanistNavigation         : "com.google.accompanist:accompanist-navigation-animation:$accompanist",
                 accompanistSwiperefresh       : "com.google.accompanist:accompanist-swiperefresh:$accompanist",
                 accompanistPager              : "com.google.accompanist:accompanist-pager:$accompanist",
