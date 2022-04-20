@@ -74,8 +74,8 @@ fun SampleAlertDialog(
     content: String,
     cancelText: String = "取消",
     confirmText: String = "继续",
+    onDismiss: () -> Unit = {},
     onConfirmClick: () -> Unit,
-    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         title = {

@@ -79,7 +79,6 @@ dependencies {
 
     api depend["accompanistInsets"]
     api depend["accompanistNavigation"]
-    api depend["accompanistSwiperefresh"]
     api depend["accompanistPager"]
     api depend["accompanistPagerIndicators"]
     api depend["accompanistPlaceholderMaterial"]
@@ -89,4 +88,7 @@ dependencies {
     api depend["accompanistPermissions"]
     api depend["accompanistWebview"]
     api depend["accompanistSystemuicontroller"]
+    api depend["accompanistSwiperefresh"]
+    api depend["paging"]
+    api depend["pagingCompose"]
 }

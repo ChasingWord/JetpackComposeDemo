@@ -28,10 +28,10 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HomeMainAdvBanner(
+fun Banner(
     bannerInfoList: List<BannerInfo>,
     bannerHeight: Dp,
-    onClick: (BannerInfo) -> Unit,
+    onClick: (BannerInfo) -> Unit = {},
 ) {
     if (bannerInfoList.isNotEmpty()) {
         Box {
@@ -52,7 +52,7 @@ fun HomeMainAdvBanner(
             ) { index ->
                 // We calculate the page from the given index
                 val page = (index - startIndex).floorMod(bannerInfoList.size)
-                HomeMainAdvBannerSingle(
+                BannerSingle(
                     bannerInfo = bannerInfoList[page],
                     modifier = Modifier
                         .fillMaxWidth()
@@ -97,7 +97,7 @@ fun HomeMainAdvBanner(
 }
 
 @Composable
-fun HomeMainAdvBannerSingle(bannerInfo: BannerInfo, modifier: Modifier) {
+fun BannerSingle(bannerInfo: BannerInfo, modifier: Modifier) {
     Image(painter = painterResource(id = bannerInfo.resId), contentDescription = null,
         modifier = modifier, contentScale = ContentScale.FillBounds)
 }

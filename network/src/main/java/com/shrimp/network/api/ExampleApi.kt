@@ -3,7 +3,6 @@ package com.shrimp.network.api
 import com.shrimp.network.entity.base.ResponseResult
 import com.shrimp.network.entity.res.PresetWordDataInfo
 import com.shrimp.network.entity.res.Tags
-import kotlinx.coroutines.Deferred
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -14,8 +13,12 @@ import retrofit2.http.Query
 interface ExampleApi {
 
     @POST("app/homepage/GetWebHomePageSearchPresetWord")
-    fun getDataAsync() : Deferred<ResponseResult<PresetWordDataInfo>>
+    fun getWebHomePageSearchPresetWord(): ResponseResult<PresetWordDataInfo>
 
     @POST("app/course/GetCourseTagsMenuByUserId")
-    fun getTags(@Header("code") code:String, @Query("currentUserId") userId:Int) : Deferred<ResponseResult<List<Tags>>>
+    suspend fun getCourseTagsMenuByUserId(
+        @Header("code") code: String,
+        @Query("currentUserId") userId: Int,
+    ): ResponseResult<List<Tags>>
+
 }

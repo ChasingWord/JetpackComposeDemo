@@ -1,15 +1,17 @@
 package com.shrimp.compose.screen.main.vm
 
-import android.app.Application
 import com.shrimp.base.view.BaseViewModel
 import com.shrimp.compose.bean.UserInfo
 import com.shrimp.compose.engine.GlobalInfoManager
 import com.shrimp.compose.screen.main.dp.DPHomeMine
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
  * Created by chasing on 2022/4/14.
  */
-class VMHomeMine(application: Application) : BaseViewModel(application) {
+@HiltViewModel
+class VMHomeMine @Inject constructor() : BaseViewModel() {
 
     private val dpHomeMine: DPHomeMine = DPHomeMine()
 

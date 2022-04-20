@@ -24,7 +24,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.get
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -33,17 +32,17 @@ import com.shrimp.base.utils.L
 import com.shrimp.base.view.BaseActivity
 import com.shrimp.compose.screen.common.BottomNavRoute
 import com.shrimp.compose.screen.common.RouteName
-import com.shrimp.compose.screen.main.HomeVMManager
 import com.shrimp.compose.ui.theme.AppTheme
 import com.shrimp.compose.ui.theme.color_a6a9ad
 import com.shrimp.compose.ui.theme.color_ff609d
+import com.shrimp.compose.ui.widgets.AppSnackBar
 
 /**
  * Created by chasing on 2022/4/19.
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Home(vmManager: HomeVMManager, activity: BaseActivity) {
+fun Home(activity: BaseActivity) {
     val navCtrl = rememberAnimatedNavController()
 //    // 注册生命周期回调
 //    topNavController.setLifecycleOwner(activity);
@@ -74,7 +73,7 @@ fun Home(vmManager: HomeVMManager, activity: BaseActivity) {
                     .fillMaxHeight(),
                 route = "root",
             ) {
-                composable("home") { HomeMain(navCtrl) }
+                composable("home") { HomeMain(navCtrl, scaffoldState) }
                 composable("community") { HomeCommunity(navCtrl) }
                 composable("message") {
                     Text(text = "消息",
@@ -84,7 +83,7 @@ fun Home(vmManager: HomeVMManager, activity: BaseActivity) {
                         fontSize = 17.sp,
                         color = colorResource(id = com.shrimp.compose.R.color.color_2c2c2c))
                 }
-                composable("mine") { HomeMine(vmManager.vmHomeMine, activity) }
+                composable("mine") { HomeMine(activity) }
                 composable(
                     "community_personal/{userId}",
                     arguments = listOf(navArgument("userId") { type = NavType.IntType }),
@@ -109,10 +108,20 @@ fun Home(vmManager: HomeVMManager, activity: BaseActivity) {
                         })
                     },
                 ) { navBackStackEntry ->
-                    CommunityPersonal(navBackStackEntry.arguments?.getInt("userId")?: 0)
+                    CommunityPersonal(navCtrl,
+                        scaffoldState,
+                        navBackStackEntry.arguments?.getInt("userId") ?: 0)
                 }
             }
-        })
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = scaffoldState.snackbarHostState
+            ) { data ->
+                AppSnackBar(data = data)
+            }
+        }
+    )
 }
 
 @Composable

@@ -1,6 +1,5 @@
 package com.shrimp.network
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.shrimp.base.BuildConfig
 import com.shrimp.network.utils.EncryptionInterceptor
 import com.shrimp.network.utils.JsonConverterFactory
@@ -15,32 +14,34 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
     private const val IP = "http://192.168.100.231:8888/"
 
-    private lateinit var retrofit: Retrofit
-    private val clock = Any()
-
-    fun getRetrofit(): Retrofit {
-        if (!::retrofit.isInitialized) {
-            synchronized(clock) {
-                if (!::retrofit.isInitialized)
-                    retrofit = Retrofit.Builder()
-                        .baseUrl(IP)
-                        .client(newHttpClient())
-                        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                        .addConverterFactory(JsonConverterFactory.create())
-                        .build()
+    /**
+     * 请求超时时间
+     */
+    private const val DEFAULT_TIMEOUT = 30000
+    private val okHttpClient: OkHttpClient
+        get() {
+            return OkHttpClient.Builder().run {
+                readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+                writeTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+                connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+                addInterceptor(EncryptionInterceptor())
+                if (BuildConfig.DEBUG)
+                    addInterceptor(LoggerInterceptor())
+                build()
             }
         }
-        return retrofit
-    }
 
-    private fun newHttpClient(): OkHttpClient {
-        val builder = OkHttpClient().newBuilder()
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .addInterceptor(EncryptionInterceptor())
-        if (BuildConfig.DEBUG)
-            builder.addInterceptor(LoggerInterceptor())
-        return builder.build()
-    }
+    private lateinit var retrofit: Retrofit
+
+    val _retrofit: Retrofit
+        get() {
+            if (!RetrofitClient::retrofit.isInitialized) {
+                retrofit = Retrofit.Builder()
+                    .baseUrl(IP)
+                    .client(okHttpClient)
+                    .addConverterFactory(JsonConverterFactory.create())
+                    .build()
+            }
+            return retrofit
+        }
 }

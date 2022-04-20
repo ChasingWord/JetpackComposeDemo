@@ -1,7 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
+
+def depend = rootProject.ext.dependencies
 
 android {
     compileSdk unitCompileSdk
@@ -48,4 +52,10 @@ android {
 dependencies {
     implementation project(':base')
     implementation project(':network')
+
+    implementation depend["hilt"]
+    implementation depend["hiltNavigation"]
+    implementation depend["hiltVM"]
+    kapt depend["hiltKapt"]
+    kapt depend["hiltCompilerKapt"]
 }

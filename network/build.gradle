@@ -38,5 +38,4 @@ dependencies {
     implementation depend["retrofit2"]
     api depend["retrofit2Gson"]
     implementation depend["okhttp3Interceptor"]
-    implementation depend["retrofit2Kotlin"]
 }

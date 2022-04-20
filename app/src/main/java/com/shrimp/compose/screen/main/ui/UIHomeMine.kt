@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.load
 import coil.request.ImageRequest
@@ -37,7 +38,10 @@ import com.shrimp.compose.screen.main.vm.VMHomeMine
  * Created by chasing on 2022/3/22.
  */
 @Composable
-fun HomeMine(vmHomeMine: VMHomeMine, activity: BaseActivity) {
+fun HomeMine(
+    activity: BaseActivity,
+    vmHomeMine: VMHomeMine = hiltViewModel(),
+) {
     var userInfo by remember { mutableStateOf(UserInfo()) }
     GlobalInfoManager.userInfo.removeObservers(activity)
     GlobalInfoManager.userInfo.observe(activity) {

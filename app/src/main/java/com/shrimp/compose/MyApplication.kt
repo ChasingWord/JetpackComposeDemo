@@ -1,6 +1,8 @@
 package com.shrimp.compose
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import android.os.Build
 import coil.ComponentRegistry
 import coil.ImageLoader
@@ -10,11 +12,21 @@ import coil.decode.ImageDecoderDecoder
 import coil.decode.VideoFrameDecoder
 import coil.memory.MemoryCache
 import com.shrimp.compose.util.CrashErrorHandler
+import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.internal.managers.ApplicationComponentManager
+import dagger.hilt.android.internal.modules.ApplicationContextModule
 
 /**
  * Created by chasing on 2022/3/22.
  */
+@HiltAndroidApp
 class MyApplication : Application(), ImageLoaderFactory {
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var CONTEXT: Context
+    }
+
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .memoryCache { MemoryCache.Builder(this).maxSizePercent(0.25).build() }
@@ -32,6 +44,7 @@ class MyApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+        CONTEXT = this
         CrashErrorHandler.init(this)
     }
 }

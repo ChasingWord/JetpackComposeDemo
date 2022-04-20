@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -45,8 +47,12 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.*
+import com.shrimp.compose.ui.widgets.Banner
+import com.shrimp.compose.ui.widgets.SNACK_ERROR
 import com.shrimp.compose.ui.widgets.TopicItem
+import com.shrimp.compose.ui.widgets.popupSnackBar
 import com.shrimp.compose.util.floorMod
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -60,14 +66,15 @@ import kotlin.math.ceil
 @Composable
 fun HomeMainPreview() {
     val navCtrl = rememberNavController()
-    HomeMain(navCtrl)
+    val scaffoldState = rememberScaffoldState()
+    HomeMain(navCtrl, scaffoldState)
 }
 
 var HomeMainTotalScroll = MutableLiveData(0f)
 var HomeMainScrollState: LazyListState? = null
 
 @Composable
-fun HomeMain(navCtrl: NavHostController) {
+fun HomeMain(navCtrl: NavHostController, scaffoldState: ScaffoldState) {
     val dp100ToPx = with(LocalDensity.current) { 100.dp.toPx() }
 
     Box(modifier = Modifier.background(color = colorResource(id = R.color.white))) {
@@ -96,7 +103,7 @@ fun HomeMain(navCtrl: NavHostController) {
                     HomeMainAdvBanner()
                 }
                 item {
-                    HomeMainChannel()
+                    HomeMainChannel(scaffoldState)
                 }
                 item {
                     HomeMainHottestCourse()
@@ -213,84 +220,20 @@ fun HomeMainAdvBanner() {
     bannerInfoList.add(BannerInfo(R.mipmap.banner_3))
     bannerInfoList.add(BannerInfo(R.mipmap.banner_4))
 
-    Box {
-        // We start the pager in the middle of the raw number of pages
-        val startIndex = Int.MAX_VALUE / 2
-        val pagerState = rememberPagerState(initialPage = startIndex)
-        HorizontalPager(
-            // Set the raw page count to a really large number
-            count = Int.MAX_VALUE,
-            state = pagerState,
-            // Add 32.dp horizontal padding to 'center' the pages
-//        contentPadding = PaddingValues(horizontal = 0.dp),
-            // Add some horizontal spacing between items
-//            itemSpacing = 0.dp,
-            modifier = Modifier
-                .height(234.dp)
-                .fillMaxWidth()
-        ) { index ->
-            // We calculate the page from the given index
-            val page = (index - startIndex).floorMod(bannerInfoList.size)
-            HomeMainAdvBannerSingle(
-                bannerInfo = bannerInfoList[page],
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-            )
-        }
-
-        var time by remember { mutableStateOf(System.currentTimeMillis()) }
-        //自动滚动
-        if (pagerState.pageCount > 1) {
-            LaunchedEffect(time) {
-                withContext(Dispatchers.IO) {
-                    delay(3000)
-                    withContext(Dispatchers.Main) {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1, 0f)
-                        time = System.currentTimeMillis()
-                    }
-                }
-            }
-        }
-
-        Row(modifier = Modifier
-            .padding(10.dp)
-            .align(Alignment.BottomCenter)) {
-            val page = (pagerState.currentPage - startIndex).floorMod(bannerInfoList.size)
-            for (i in bannerInfoList.indices) {
-                Box(modifier = Modifier
-                    .width(10.dp)
-                    .height(6.dp)
-                    .padding(0.dp, 0.dp, 4.dp, 0.dp)
-                    .background(color = colorResource(
-                        id = if (page == i)
-                            R.color.black
-                        else
-                            R.color.color_f1f3f5),
-                        shape = CircleShape))
-            }
-        }
-    }
+    Banner(bannerInfoList = bannerInfoList, bannerHeight = 234.dp)
 }
 
 @Composable
-fun HomeMainAdvBannerSingle(bannerInfo: BannerInfo, modifier: Modifier) {
-    Image(painter = painterResource(id = bannerInfo.resId), contentDescription = null,
-        modifier = modifier, contentScale = ContentScale.FillBounds)
-}
-
-@Composable
-fun HomeMainChannel() {
+fun HomeMainChannel(scaffoldState: ScaffoldState) {
     Row(modifier = Modifier.padding(0.dp, 10.dp)) {
         val titleList = listOf("学习", "教程", "资源", "发现", "王座杯")
         val imgList = listOf(R.mipmap.home_channel_learn, R.mipmap.home_channel_course,
             R.mipmap.home_channel_resource, R.mipmap.home_channel_find,
             R.mipmap.home_channel_throne_cup)
-        val context = LocalContext.current
         val modifier = Modifier.weight(1f)
         for (index in titleList.indices) {
             HomeMainChannelSingle(modifier = modifier, imgList[index], titleList[index]) {
-                Toast.makeText(context, titleList[index], Toast.LENGTH_SHORT).show()
+                popupSnackBar(CoroutineScope(Dispatchers.Main), scaffoldState, label = SNACK_ERROR, titleList[index])
             }
         }
     }
