@@ -7,3 +7,4 @@ sealed class ViewAction {
     object FetchData : ViewAction()
     object Refresh : ViewAction()
 }
+

@@ -9,7 +9,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.shrimp.base.view.BaseViewModel
 import com.shrimp.compose.engine.ViewAction
-import com.shrimp.compose.ui.widgets.paging.simplePager
+import com.shrimp.compose.util.paging.simplePager
 import com.shrimp.network.RequestManager
 import com.shrimp.network.entity.res.Tags
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
  * Created by chasing on 2022/4/20.
  */
 @HiltViewModel
-class VMCommunityPersonal @Inject constructor() : BaseViewModel() {
+class VMLabel @Inject constructor() : BaseViewModel() {
     private val pager by lazy {
         simplePager {
             delay(2000)
@@ -29,7 +29,7 @@ class VMCommunityPersonal @Inject constructor() : BaseViewModel() {
         }.cachedIn(viewModelScope)
     }
 
-    var viewStates by mutableStateOf(CommunityPersonalViewState(pagingData = pager))
+    var viewStates by mutableStateOf(LabelViewState(pagingData = pager))
         private set
 
     init {
@@ -52,7 +52,7 @@ class VMCommunityPersonal @Inject constructor() : BaseViewModel() {
     }
 }
 
-data class CommunityPersonalViewState(
+data class LabelViewState(
     val pagingData: Flow<PagingData<Tags>>,
     val isRefreshing: Boolean = false,
     val listState: LazyListState = LazyListState(),

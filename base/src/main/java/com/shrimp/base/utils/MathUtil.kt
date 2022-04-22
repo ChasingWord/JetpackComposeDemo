@@ -1,4 +1,4 @@
-package com.shrimp.compose.util
+package com.shrimp.base.utils
 
 /**
  * Created by chasing on 2022/3/23.

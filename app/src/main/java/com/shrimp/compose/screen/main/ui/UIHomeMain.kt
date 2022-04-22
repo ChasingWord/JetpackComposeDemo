@@ -1,13 +1,11 @@
 package com.shrimp.compose.screen.main.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -34,27 +32,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.*
+import com.shrimp.compose.screen.main.vm.VMHomeMain
+import com.shrimp.compose.ui.theme.AppTheme
+import com.shrimp.compose.ui.theme.color_31353a
+import com.shrimp.compose.ui.theme.color_f1f3f5
+import com.shrimp.compose.ui.theme.color_ffffff
 import com.shrimp.compose.ui.widgets.Banner
 import com.shrimp.compose.ui.widgets.SNACK_ERROR
 import com.shrimp.compose.ui.widgets.TopicItem
 import com.shrimp.compose.ui.widgets.popupSnackBar
-import com.shrimp.compose.util.floorMod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -70,21 +68,21 @@ fun HomeMainPreview() {
     HomeMain(navCtrl, scaffoldState)
 }
 
-var HomeMainTotalScroll = MutableLiveData(0f)
-var HomeMainScrollState: LazyListState? = null
-
 @Composable
-fun HomeMain(navCtrl: NavHostController, scaffoldState: ScaffoldState) {
+fun HomeMain(
+    navCtrl: NavHostController, scaffoldState: ScaffoldState,
+    vmHomeMain: VMHomeMain = hiltViewModel(),
+) {
     val dp100ToPx = with(LocalDensity.current) { 100.dp.toPx() }
 
-    Box(modifier = Modifier.background(color = colorResource(id = R.color.white))) {
+    Box(modifier = Modifier.background(color = AppTheme.colors.primary)) {
         var alpha by remember { mutableStateOf(0f) }
         var isBlackType by remember { mutableStateOf(false) }
-        val totalScrollTemp = HomeMainTotalScroll.observeAsState()
+        val totalScrollTemp = vmHomeMain.totalScroll.observeAsState()
         val nestedScrollConnection = remember {
             object : NestedScrollConnection {
                 override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    HomeMainTotalScroll.value = (totalScrollTemp.value ?: 0f) + available.y
+                    vmHomeMain.totalScroll.value = (totalScrollTemp.value ?: 0f) + available.y
                     return Offset.Zero
                 }
             }
@@ -96,9 +94,9 @@ fun HomeMain(navCtrl: NavHostController, scaffoldState: ScaffoldState) {
         var isRefreshing by remember { mutableStateOf(false) }
         val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
         SwipeRefresh(state = swipeRefreshState, onRefresh = { isRefreshing = true }) {
-            HomeMainScrollState = rememberLazyListState()
+            vmHomeMain.scrollState = rememberLazyListState()
             LazyColumn(modifier = Modifier.nestedScroll(nestedScrollConnection),
-                state = HomeMainScrollState!!) {
+                state = vmHomeMain.scrollState!!) {
                 item {
                     HomeMainAdvBanner()
                 }
@@ -135,7 +133,7 @@ fun HomeMain(navCtrl: NavHostController, scaffoldState: ScaffoldState) {
                     val tempAlpha = abs(it / dp100ToPx)
                     tempAlpha.coerceAtMost(1f)
                 } else {
-                    HomeMainTotalScroll.value = 0f
+                    vmHomeMain.totalScroll.value = 0f
                     0f
                 }
                 if (alpha != alphaTemp)
@@ -151,20 +149,20 @@ fun HomeMain(navCtrl: NavHostController, scaffoldState: ScaffoldState) {
 
         HomeMainSearchBar(Modifier.background(
             brush = Brush.verticalGradient(colors = listOf(Color.White, Color.White)),
-            alpha = alpha), isBlackType)
+            alpha = alpha), isBlackType, vmHomeMain)
         SystemStatusBarTransparent(isBlackType)
     }
 }
 
 @Composable
-fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean) {
+fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean, vmHomeMain: VMHomeMain) {
     Box(modifier = modifier
         .fillMaxWidth()
         .statusBarsPadding()) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(45.dp)
-            .padding(13.dp, 7.dp, 13.dp, 7.dp),
+            .padding(AppTheme.dimen.safeSpace, 7.dp, AppTheme.dimen.safeSpace, 7.dp),
             verticalAlignment = Alignment.CenterVertically) {
             val subModifier = Modifier
                 .background(color = colorResource(
@@ -175,7 +173,13 @@ fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean) {
                     shape = RoundedCornerShape(15.dp))
                 .fillMaxHeight()
             Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = subModifier.weight(1f)) {
+                modifier = subModifier
+                    .weight(1f)
+                    .clickable(indication = null, interactionSource = remember {
+                        MutableInteractionSource()
+                    }, onClick = {
+                        vmHomeMain.changeHint()
+                    })) {
                 Image(painter = painterResource(
                     id = if (isBlackType)
                         R.mipmap.search_black_57x54
@@ -183,7 +187,7 @@ fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean) {
                         R.mipmap.search_57x54),
                     contentDescription = null,
                     modifier = Modifier.padding(10.dp, 0.dp))
-                Text(text = "搜索教程或资源关键词", fontSize = 13.sp,
+                Text(text = vmHomeMain.searchHint, fontSize = 13.sp,
                     color = colorResource(
                         id = if (isBlackType)
                             R.color.color_a6a9ad
@@ -233,7 +237,10 @@ fun HomeMainChannel(scaffoldState: ScaffoldState) {
         val modifier = Modifier.weight(1f)
         for (index in titleList.indices) {
             HomeMainChannelSingle(modifier = modifier, imgList[index], titleList[index]) {
-                popupSnackBar(CoroutineScope(Dispatchers.Main), scaffoldState, label = SNACK_ERROR, titleList[index])
+                popupSnackBar(CoroutineScope(Dispatchers.Main),
+                    scaffoldState,
+                    label = SNACK_ERROR,
+                    titleList[index])
             }
         }
     }
@@ -247,7 +254,7 @@ fun HomeMainChannelSingle(
     Column(modifier = modifier.clickable { onClick.invoke() },
         horizontalAlignment = Alignment.CenterHorizontally) {
         Image(painter = painterResource(id = resId), contentDescription = null)
-        Text(text = title, color = colorResource(id = R.color.color_282a2e),
+        Text(text = title, color = AppTheme.colors.textPrimary,
             fontSize = 15.sp)
     }
 }
@@ -277,10 +284,10 @@ fun HomeMainHottestCourse() {
         }*/
 
         Text(text = "今日最热", fontSize = 19.sp,
-            color = colorResource(id = R.color.color_282a2e),
+            color = AppTheme.colors.textPrimary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(13.dp, 0.dp, 0.dp, 14.dp))
+                .padding(AppTheme.dimen.safeSpace, 0.dp, 0.dp, 14.dp))
         val courseList = listOf(
             CourseInfo(0,
                 "原画入门基础",
@@ -304,13 +311,13 @@ fun HomeMainHottestCourse() {
             Box {
                 Row {
                     HomeMainHottestCourseSingle(modifier
-                        .padding(13.dp, 0.dp, 5.dp, 10.dp)
-                        .border(BorderStroke(1.dp, colorResource(id = R.color.color_f1f3f5)),
+                        .padding(AppTheme.dimen.safeSpace, 0.dp, 5.dp, 10.dp)
+                        .border(BorderStroke(1.dp, AppTheme.colors.divider),
                             RoundedCornerShape(4.dp)),
                         courseList[index * 2])
                     HomeMainHottestCourseSingle(modifier
-                        .padding(5.dp, 0.dp, 13.dp, 10.dp)
-                        .border(BorderStroke(1.dp, colorResource(id = R.color.color_f1f3f5)),
+                        .padding(5.dp, 0.dp, AppTheme.dimen.safeSpace, 10.dp)
+                        .border(BorderStroke(1.dp, AppTheme.colors.divider),
                             RoundedCornerShape(4.dp)),
                         courseList[index * 2 + 1])
                 }
@@ -339,12 +346,12 @@ fun HomeMainHottestCourseSingle(modifier: Modifier, courseInfo: CourseInfo) {
             contentScale = ContentScale.Crop)
         Text(text = courseInfo.title,
             fontSize = 15.sp,
-            color = colorResource(id = R.color.color_282a2e),
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.padding(10.dp, 5.dp, 10.dp, 0.dp),
             maxLines = 1)
         Text(text = courseInfo.subTitle,
             fontSize = 10.sp,
-            color = colorResource(id = R.color.color_a6a9ad),
+            color = AppTheme.colors.textSecondary,
             modifier = Modifier.padding(10.dp, 3.dp, 10.dp, 10.dp),
             maxLines = 1)
     }
@@ -356,16 +363,18 @@ fun HomeMainResource() {
     Column(modifier = Modifier
         .padding(0.dp, 10.dp)
         .background(brush = Brush.verticalGradient(colors = listOf(
-            Color(ContextCompat.getColor(context, R.color.color_f1f3f5)),
-            Color(ContextCompat.getColor(context, R.color.white))
+            color_f1f3f5, color_ffffff
         )))) {
-        Row(modifier = Modifier.padding(13.dp, 20.dp, 13.dp, 0.dp),
+        Row(modifier = Modifier.padding(AppTheme.dimen.safeSpace,
+            20.dp,
+            AppTheme.dimen.safeSpace,
+            0.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text(text = "排行榜", fontSize = 20.sp, fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.color_2c2c2c),
+                color = AppTheme.colors.textPrimary,
                 modifier = Modifier.weight(1f))
 
-            Text(text = "更多", fontSize = 12.sp, color = colorResource(id = R.color.color_777e89))
+            Text(text = "更多", fontSize = 12.sp, color = AppTheme.colors.textSecondary)
             Image(painter = painterResource(id = R.mipmap.arrow_right_36),
                 contentDescription = null)
         }
@@ -388,9 +397,9 @@ fun HomeMainResource() {
                 HomeMainResourceTab(
                     Modifier.clickable { position = it },
                     (if (position == it)
-                        R.color.color_ff609d
+                        AppTheme.colors.confirm
                     else
-                        R.color.color_a6a9ad),
+                        AppTheme.colors.textSecondary),
                     resourceGroupList[it])
             }
         }
@@ -415,16 +424,20 @@ fun HomeMainResource() {
 }
 
 @Composable
-fun HomeMainResourceTab(modifier: Modifier, textColor: Int, resourceInfoGroup: ResourceInfoGroup) {
+fun HomeMainResourceTab(
+    modifier: Modifier,
+    textColor: Color,
+    resourceInfoGroup: ResourceInfoGroup,
+) {
     Text(text = resourceInfoGroup.groupName,
         fontSize = 16.sp,
-        color = colorResource(id = textColor),
-        modifier = modifier.padding(13.dp, 10.dp))
+        color = textColor,
+        modifier = modifier.padding(AppTheme.dimen.safeSpace, 10.dp))
 }
 
 @Composable
 fun HomeMainResourceSingle(modifier: Modifier, resourceInfo: ResourceInfo) {
-    Row(modifier = modifier.padding(13.dp, 0.dp, 10.dp, 10.dp),
+    Row(modifier = modifier.padding(AppTheme.dimen.safeSpace, 0.dp, 10.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             modifier = Modifier
@@ -436,12 +449,12 @@ fun HomeMainResourceSingle(modifier: Modifier, resourceInfo: ResourceInfo) {
         Column(modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 0.dp)) {
             Text(text = resourceInfo.title,
                 fontSize = 14.sp,
-                color = colorResource(id = R.color.color_31353a))
+                color = color_31353a)
             Text(text = "${resourceInfo.saleCount}销量", fontSize = 12.sp,
-                color = colorResource(id = R.color.color_a6a9ad),
+                color = AppTheme.colors.textSecondary,
                 modifier = Modifier.padding(0.dp, 2.dp, 0.dp, 0.dp))
             Text(text = "${resourceInfo.fileSize}MB", fontSize = 12.sp,
-                color = colorResource(id = R.color.color_a6a9ad),
+                color = AppTheme.colors.textSecondary,
                 modifier = Modifier.padding(0.dp, 1.dp, 0.dp, 0.dp))
         }
     }

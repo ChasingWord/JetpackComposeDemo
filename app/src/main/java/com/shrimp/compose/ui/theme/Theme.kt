@@ -1,7 +1,8 @@
 package com.shrimp.compose.ui.theme
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.material.Shapes
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 
 var LocalAppColors = compositionLocalOf {
@@ -9,13 +10,13 @@ var LocalAppColors = compositionLocalOf {
 }
 
 @Composable
-fun AppTheme(
+fun AppThemeLayout(
     content: @Composable () -> Unit,
 ) {
-//    MaterialTheme {
-//        content.invoke()
-//    }
-    CompositionLocalProvider(LocalAppColors provides getColors(), content = content)
+    val rippleIndication = rememberRipple()
+    CompositionLocalProvider(LocalAppColors provides getColors(),
+        LocalIndication provides rippleIndication,
+        content = content)
 }
 
 @Stable
@@ -34,5 +35,10 @@ object AppTheme {
         @Composable
         @ReadOnlyComposable
         get() = Shapes
+
+    val dimen: Dimen
+        @Composable
+        @ReadOnlyComposable
+        get() = Dimen()
 }
 

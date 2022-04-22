@@ -11,10 +11,8 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.VideoFrameDecoder
 import coil.memory.MemoryCache
-import com.shrimp.compose.util.CrashErrorHandler
+import com.shrimp.base.utils.CrashErrorHandler
 import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.android.internal.managers.ApplicationComponentManager
-import dagger.hilt.android.internal.modules.ApplicationContextModule
 
 /**
  * Created by chasing on 2022/3/22.

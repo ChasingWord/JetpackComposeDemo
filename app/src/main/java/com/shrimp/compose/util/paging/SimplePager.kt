@@ -1,11 +1,11 @@
-package com.shrimp.compose.ui.widgets.paging
+package com.shrimp.compose.util.paging
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.shrimp.base.utils.L
+import com.shrimp.base.utils.NetUtil
 import com.shrimp.compose.MyApplication
-import com.shrimp.compose.util.NetCheckUtil
 import com.shrimp.compose.util.showToast
 import com.shrimp.network.entity.base.HttpResult
 import com.shrimp.network.entity.base.ResponseResult
@@ -20,7 +20,7 @@ fun <T : Any> ViewModel.simplePager(
         val response = try {
             HttpResult.Success(callAction.invoke(page))
         } catch (e: Exception) {
-            if (NetCheckUtil.checkNet(MyApplication.CONTEXT).not()) {
+            if (NetUtil.checkNet(MyApplication.CONTEXT).not()) {
                 showToast("没有网络,请重试")
             } else {
                 showToast("请求失败，请重试")

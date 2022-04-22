@@ -28,14 +28,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.shrimp.base.utils.GenericTools
+import com.shrimp.base.utils.RouteUtils
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.TOPIC_DATA_TYPE_IMAGE
 import com.shrimp.compose.bean.TOPIC_DATA_TYPE_NEWS
 import com.shrimp.compose.bean.TOPIC_DATA_TYPE_RESOURCE
 import com.shrimp.compose.bean.TopicData
-import com.shrimp.compose.screen.common.RouteName
-import com.shrimp.compose.util.GenericTools
-import com.shrimp.compose.util.RouteUtils
+import com.shrimp.compose.common.RouteName
+import com.shrimp.compose.ui.theme.AppTheme
 
 /**
  * Created by chasing on 2022/3/23.
@@ -48,34 +49,31 @@ fun TopicItemPreview() {
 }
 
 @Composable
-fun TopicItem(navController: NavHostController, topicData: TopicData) {
+fun TopicItem(navCtrl: NavHostController, topicData: TopicData) {
     Box {
         Column {
-            TopicItemUserInfo(navController, topicData)
+            TopicItemUserInfo(navCtrl, topicData)
             Text(text = "内容.....",
                 fontSize = 15.sp,
-                color = colorResource(id = R.color.color_282a2e),
-                modifier = Modifier.padding(13.dp, 12.dp, 13.dp, 0.dp))
+                color = AppTheme.colors.textPrimary,
+                modifier = Modifier.padding(AppTheme.dimen.safeSpace, 12.dp, AppTheme.dimen.safeSpace, 0.dp))
             when (topicData.type) {
                 TOPIC_DATA_TYPE_IMAGE -> TopicItemImgInfo(topicData.imgList)
                 TOPIC_DATA_TYPE_RESOURCE -> TopicItemResource()
                 TOPIC_DATA_TYPE_NEWS -> TopicItemNews()
             }
-            TopicItemLabel()
+            TopicItemLabel(navCtrl)
             TopicItemFunction()
-            Divider(color = colorResource(id = R.color.color_f1f3f5))
+            Divider(color = AppTheme.colors.divider)
         }
     }
 }
 
 @Composable
-fun TopicItemUserInfo(navController: NavHostController, topicData: TopicData) {
+fun TopicItemUserInfo(navCtrl: NavHostController, topicData: TopicData) {
     Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(13.dp, 20.dp, 13.dp, 0.dp)) {
+        modifier = Modifier.padding(AppTheme.dimen.safeSpace, 20.dp, AppTheme.dimen.safeSpace, 0.dp)) {
         Image(modifier = Modifier
-            .clickable {
-                RouteUtils.navTo(navController, RouteName.COMMUNITY_PERSONAL, 311)
-            }
             .size(31.dp)
             .clip(CircleShape),
             painter = painterResource(id = R.mipmap.default_pic), contentDescription = null)
@@ -85,7 +83,7 @@ fun TopicItemUserInfo(navController: NavHostController, topicData: TopicData) {
             Row {
                 Text(text = "昵称",
                     fontSize = 13.sp,
-                    color = colorResource(id = R.color.color_282a2e))
+                    color = AppTheme.colors.textPrimary)
                 Image(painter = painterResource(id = R.mipmap.lv_1),
                     contentDescription = null,
                     modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp))
@@ -118,7 +116,7 @@ fun TopicItemImgInfo(imgList: List<String>) {
             width = GenericTools.px2dip(LocalContext.current, screenWidth - 34.dp.toPx())
         }
         for (index in 0..imgList.size / countOfSingleRow) {
-            Row(Modifier.padding(13.dp, (if (index == 0) 10.dp else 4.dp), 13.dp, 0.dp)) {
+            Row(Modifier.padding(AppTheme.dimen.safeSpace, (if (index == 0) 10.dp else 4.dp), AppTheme.dimen.safeSpace, 0.dp)) {
                 for (i in 0 until countOfSingleRow) {
                     TopicItemImgSingle(imgUrl = imgList[index * countOfSingleRow + i],
                         modifier = Modifier
@@ -143,7 +141,7 @@ fun TopicItemImgSingle(imgUrl: String, modifier: Modifier) {
 @Composable
 fun TopicItemResource() {
     Row(modifier = Modifier
-        .padding(13.dp, 10.dp, 13.dp, 0.dp)
+        .padding(AppTheme.dimen.safeSpace, 10.dp, AppTheme.dimen.safeSpace, 0.dp)
         .height(IntrinsicSize.Max)
         .background(color = colorResource(id = R.color.color_f6f8fa),
             shape = RoundedCornerShape(4.dp))) {
@@ -169,7 +167,7 @@ fun TopicItemResource() {
             Text(text = "资源标题--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
                 maxLines = 2,
                 fontSize = 15.sp,
-                color = colorResource(id = R.color.color_282a2e),
+                color = AppTheme.colors.textPrimary,
                 modifier = Modifier.defaultMinSize(0.dp, 42.dp))
             Row(modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 9.dp)
@@ -193,10 +191,10 @@ fun TopicItemResource() {
 @Composable
 fun TopicItemNews() {
     Column(modifier = Modifier
-        .padding(13.dp, 10.dp, 13.dp, 0.dp)
+        .padding(AppTheme.dimen.safeSpace, 10.dp, AppTheme.dimen.safeSpace, 0.dp)
         .background(color = colorResource(id = R.color.color_f6f8fa),
             shape = RoundedCornerShape(4.dp))
-        .padding(13.dp, 0.dp, 13.dp, 10.dp)) {
+        .padding(AppTheme.dimen.safeSpace, 0.dp, AppTheme.dimen.safeSpace, 10.dp)) {
         Row(modifier = Modifier.height(IntrinsicSize.Max)) {
             Column(verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -205,13 +203,13 @@ fun TopicItemNews() {
                     .padding(0.dp, 10.dp, 10.dp, 0.dp)) {
                 Text(text = "假如给你1个亿？",
                     fontSize = 15.sp,
-                    color = colorResource(id = R.color.color_282a2e),
+                    color = AppTheme.colors.textPrimary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth())
                 Text(text = "最简单稳定的操作方式，做一个一天期的国债逆回购。具体操...",
                     fontSize = 12.sp,
-                    color = colorResource(id = R.color.color_a6a9ad),
+                    color = AppTheme.colors.textSecondary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth())
@@ -220,7 +218,7 @@ fun TopicItemNews() {
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .padding(0.dp, 13.dp, 0.dp, 0.dp)
+                    .padding(0.dp, AppTheme.dimen.safeSpace, 0.dp, 0.dp)
                     .width(126.dp)
                     .aspectRatio(126 / 80f)
                     .clip(RoundedCornerShape(4.dp)))
@@ -238,17 +236,23 @@ fun TopicItemNews() {
 }
 
 @Composable
-fun TopicItemLabel() {
-    Row(modifier = Modifier.padding(13.dp, 10.dp, 13.dp, 0.dp)) {
+fun TopicItemLabel(navCtrl: NavHostController, ) {
+    Row(modifier = Modifier.padding(AppTheme.dimen.safeSpace, 10.dp, AppTheme.dimen.safeSpace, 0.dp)) {
         Text(text = "标签", fontSize = 12.sp, color = colorResource(id = R.color.color_4b5057),
             modifier = Modifier
                 .border(1.dp, colorResource(id = R.color.color_p10282a2e), RoundedCornerShape(4.dp))
-                .padding(10.dp, 5.dp))
+                .padding(10.dp, 5.dp)
+                .clickable {
+                    RouteUtils.navTo(navCtrl, RouteName.LABEL, 311)
+                })
         Box(Modifier.width(10.dp))
         Text(text = "标签", fontSize = 12.sp, color = colorResource(id = R.color.color_4b5057),
             modifier = Modifier
                 .border(1.dp, colorResource(id = R.color.color_p10282a2e), RoundedCornerShape(4.dp))
-                .padding(10.dp, 5.dp))
+                .padding(10.dp, 5.dp)
+                .clickable {
+                    RouteUtils.navTo(navCtrl, RouteName.LABEL, 311)
+                })
     }
 }
 
@@ -262,7 +266,7 @@ fun TopicItemFunction() {
                 .fillMaxHeight()) {
             Image(painter = painterResource(id = R.mipmap.forward), contentDescription = null,
                 modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
-            Text(text = "转发", fontSize = 13.sp, color = colorResource(id = R.color.color_282a2e))
+            Text(text = "转发", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
         TextButton(onClick = { Toast.makeText(context, "评论", Toast.LENGTH_SHORT).show() },
             modifier = Modifier
@@ -270,7 +274,7 @@ fun TopicItemFunction() {
                 .fillMaxHeight()) {
             Image(painter = painterResource(id = R.mipmap.comment), contentDescription = null,
                 modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
-            Text(text = "评论", fontSize = 13.sp, color = colorResource(id = R.color.color_282a2e))
+            Text(text = "评论", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
         TextButton(onClick = { Toast.makeText(context, "奶一口", Toast.LENGTH_SHORT).show() },
             modifier = Modifier
@@ -278,7 +282,7 @@ fun TopicItemFunction() {
                 .fillMaxHeight()) {
             Image(painter = painterResource(id = R.mipmap.praise), contentDescription = null,
                 modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
-            Text(text = "奶一口", fontSize = 13.sp, color = colorResource(id = R.color.color_282a2e))
+            Text(text = "奶一口", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
     }
 }

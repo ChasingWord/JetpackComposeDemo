@@ -16,7 +16,6 @@ fun setDecorFitsSystemWindows(window: Window){
 }
 
 /**
- * Created by chasing on 2022/3/24.
  * 添加SideEffect避免一直重复执行
  */
 @Composable
@@ -41,6 +40,7 @@ fun SystemStatusBarTransparent(isShowDarkIcon: Boolean) {
     }
 }
 
+// 隐藏状态栏
 @Composable
 fun SystemHideStatusBar() {
     val view = LocalView.current
@@ -55,6 +55,7 @@ fun SystemHideStatusBar() {
     }
 }
 
+// 隐藏状态栏和虚拟导航栏
 @Composable
 fun SystemFullScreen() {
     val view = LocalView.current
@@ -65,6 +66,18 @@ fun SystemFullScreen() {
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             it.hide(WindowInsetsCompat.Type.statusBars())
             it.hide(WindowInsetsCompat.Type.navigationBars())
+        }
+    }
+}
+
+@Composable
+fun SystemShowSystemBar(){
+    val view = LocalView.current
+    SideEffect {
+        val windowInsetsController = ViewCompat.getWindowInsetsController(view)
+        windowInsetsController?.let {
+            it.show(WindowInsetsCompat.Type.statusBars())
+            it.show(WindowInsetsCompat.Type.navigationBars())
         }
     }
 }

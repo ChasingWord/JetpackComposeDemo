@@ -9,16 +9,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.shrimp.compose.R
+import com.shrimp.base.utils.floorMod
 import com.shrimp.compose.bean.BannerInfo
-import com.shrimp.compose.util.floorMod
+import com.shrimp.compose.ui.theme.color_000000
+import com.shrimp.compose.ui.theme.color_f5f5f5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -75,23 +75,21 @@ fun Banner(
                 }
             }
 
-            Row(modifier = Modifier
-                .padding(10.dp)
-                .align(Alignment.BottomCenter)) {
-                val page = (pagerState.currentPage - startIndex).floorMod(bannerInfoList.size)
-                for (i in bannerInfoList.indices) {
-                    Box(modifier = Modifier
-                        .width(10.dp)
-                        .height(6.dp)
-                        .padding(0.dp, 0.dp, 4.dp, 0.dp)
-                        .background(color = colorResource(
-                            id = if (page == i)
-                                R.color.black
-                            else
-                                R.color.color_f1f3f5),
-                            shape = CircleShape))
+            // 大于一个才展示索引view
+            if (bannerInfoList.size > 1)
+                Row(modifier = Modifier
+                    .padding(10.dp)
+                    .align(Alignment.BottomCenter)) {
+                    val page = (pagerState.currentPage - startIndex).floorMod(bannerInfoList.size)
+                    for (i in bannerInfoList.indices) {
+                        Box(modifier = Modifier
+                            .width(10.dp)
+                            .height(6.dp)
+                            .padding(0.dp, 0.dp, 4.dp, 0.dp)
+                            .background(color = if (page == i) color_000000 else color_f5f5f5,
+                                shape = CircleShape))
+                    }
                 }
-            }
         }
     }
 }

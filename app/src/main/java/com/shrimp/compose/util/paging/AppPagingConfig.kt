@@ -1,4 +1,4 @@
-package com.shrimp.compose.ui.widgets.paging
+package com.shrimp.compose.util.paging
 
 import androidx.paging.PagingConfig
 

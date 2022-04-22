@@ -33,6 +33,7 @@ import com.shrimp.compose.bean.AppFunInfo
 import com.shrimp.compose.bean.UserInfo
 import com.shrimp.compose.engine.GlobalInfoManager
 import com.shrimp.compose.screen.main.vm.VMHomeMine
+import com.shrimp.compose.ui.theme.AppTheme
 
 /**
  * Created by chasing on 2022/3/22.
@@ -49,7 +50,7 @@ fun HomeMine(
     }
 
     val context = LocalContext.current
-    LazyColumn(modifier = Modifier.background(colorResource(id = R.color.color_f5f5f5))) {
+    LazyColumn(modifier = Modifier.background(color = AppTheme.colors.secondary)) {
         item {
             HomeMineUserInfo(vmHomeMine, userInfo)
         }
@@ -60,8 +61,8 @@ fun HomeMine(
             Text(text = "资源管理",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.color_2c2c2c),
-                modifier = Modifier.padding(13.dp, 10.dp, 13.dp, 17.dp))
+                color = AppTheme.colors.textPrimary,
+                modifier = Modifier.padding(AppTheme.dimen.safeSpace, 10.dp, AppTheme.dimen.safeSpace, 17.dp))
         }
         item {
             HomeMineResourceFun()
@@ -74,7 +75,7 @@ fun HomeMine(
         }
         item {
             Row(modifier = Modifier
-                .padding(13.dp, 10.dp)
+                .padding(AppTheme.dimen.safeSpace, 10.dp)
                 .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center) {
                 Text(text = "官网：",
@@ -125,7 +126,7 @@ fun HomeMineUserInfo(vmHomeMine: VMHomeMine, userInfo: UserInfo) {
             Column(Modifier
                 .padding(10.dp)
                 .weight(1f)) {
-                Text("昵称", fontSize = 14.sp, color = colorResource(id = R.color.color_2c2c2c))
+                Text("昵称", fontSize = 14.sp, color = AppTheme.colors.textPrimary)
                 Text("称呼", fontSize = 13.sp, color = colorResource(id = R.color.color_aeaeae))
             }
 
@@ -192,7 +193,7 @@ fun HomeMineDynamicInfo(userInfo: UserInfo) {
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
-                color = colorResource(id = R.color.color_2c2c2c))
+                color = AppTheme.colors.textPrimary)
             Text(text = "动态", fontSize = 11.sp, color = colorResource(id = R.color.color_aeaeae))
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -203,7 +204,7 @@ fun HomeMineDynamicInfo(userInfo: UserInfo) {
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
-                color = colorResource(id = R.color.color_2c2c2c))
+                color = AppTheme.colors.textPrimary)
             Text(text = "关注", fontSize = 11.sp, color = colorResource(id = R.color.color_aeaeae))
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -214,7 +215,7 @@ fun HomeMineDynamicInfo(userInfo: UserInfo) {
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
-                color = colorResource(id = R.color.color_2c2c2c))
+                color = AppTheme.colors.textPrimary)
             Text(text = "粉丝", fontSize = 11.sp, color = colorResource(id = R.color.color_aeaeae))
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -258,7 +259,7 @@ fun RowScope.HomeMineResourceFunSingle(resId: Int, name: String, funType: Int) {
         },
         horizontalAlignment = Alignment.CenterHorizontally) {
         Image(painter = painterResource(id = resId), contentDescription = null)
-        Text(text = name, fontSize = 11.sp, color = colorResource(id = R.color.color_2c2c2c),
+        Text(text = name, fontSize = 11.sp, color = AppTheme.colors.textPrimary,
             modifier = Modifier.padding(0.dp, 7.dp, 0.dp, 0.dp))
     }
 }
@@ -269,7 +270,7 @@ fun HomeMineEarnMoneyInfo() {
         backgroundColor = colorResource(id = R.color.white),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(13.dp)) {
+            .padding(AppTheme.dimen.safeSpace)) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
@@ -278,7 +279,7 @@ fun HomeMineEarnMoneyInfo() {
                 )
                 Text(text = "邀请赚钱",
                     fontSize = 13.sp,
-                    color = colorResource(id = R.color.color_2c2c2c),
+                    color = AppTheme.colors.textPrimary,
                     modifier = Modifier.padding(11.dp, 0.dp))
                 Spacer(modifier = Modifier.weight(1f))
                 Text(text = "可提现",
@@ -294,7 +295,7 @@ fun HomeMineEarnMoneyInfo() {
                 .padding(0.dp, 10.dp, 0.dp, 0.dp)
                 .background(color = colorResource(id = R.color.color_10ff609d),
                     shape = RoundedCornerShape(4.dp))
-                .padding(13.dp, 10.dp),
+                .padding(AppTheme.dimen.safeSpace, 10.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 Image(painter = painterResource(id = R.mipmap.personal_invitation_icon),
                     contentDescription = null)
@@ -331,7 +332,7 @@ fun HomeMineAppFun() {
         backgroundColor = colorResource(id = R.color.white),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(13.dp, 0.dp, 13.dp, 10.dp)) {
+            .padding(AppTheme.dimen.safeSpace, 0.dp, AppTheme.dimen.safeSpace, 10.dp)) {
         val list = mutableListOf<AppFunInfo>()
         list.add(AppFunInfo("活跃度积分", R.mipmap.personal_integral))
         list.add(AppFunInfo("活跃度等级", R.mipmap.personal_activity_level))
@@ -364,7 +365,7 @@ fun RowScope.HomeMineAppFunSingle(appFunInfo: AppFunInfo) {
         Image(painter = painterResource(id = appFunInfo.resId),
             contentDescription = null)
         Text(text = appFunInfo.name, fontSize = 13.sp,
-            color = colorResource(id = R.color.color_2c2c2c),
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.padding(0.dp, 9.dp, 0.dp, 0.dp))
         Text(text = appFunInfo.description, fontSize = 13.sp,
             color = colorResource(id = R.color.color_ff609d),

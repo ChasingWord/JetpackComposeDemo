@@ -3,7 +3,6 @@ package com.shrimp.compose.screen.main.vm
 import com.shrimp.base.view.BaseViewModel
 import com.shrimp.compose.bean.UserInfo
 import com.shrimp.compose.engine.GlobalInfoManager
-import com.shrimp.compose.screen.main.dp.DPHomeMine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -12,8 +11,6 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class VMHomeMine @Inject constructor() : BaseViewModel() {
-
-    private val dpHomeMine: DPHomeMine = DPHomeMine()
 
     fun refresh() {
         val value = GlobalInfoManager.userInfo.value ?: UserInfo()

@@ -2,13 +2,13 @@ package com.shrimp.base.widgets.dialog
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.shrimp.base.R
 
 /**
  * Created by chasing on 2021/10/26.
@@ -39,7 +39,7 @@ abstract class BaseDialog : DialogFragment() {
         val dialog = dialog
         if (dialog != null) {
             val window = dialog.window
-            window!!.setBackgroundDrawableResource(R.color.transparent)
+            window!!.setBackgroundDrawable(ColorDrawable(0x00000000))
             val params = window.attributes
             params.gravity = Gravity.CENTER
             params.dimAmount = 0.35f //设置透明度

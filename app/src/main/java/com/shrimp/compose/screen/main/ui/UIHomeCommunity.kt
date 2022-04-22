@@ -27,6 +27,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.TopicData
+import com.shrimp.compose.ui.theme.AppTheme
+import com.shrimp.compose.ui.theme.color_f6f8fa
 import com.shrimp.compose.ui.widgets.TopicItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +43,7 @@ import kotlinx.coroutines.withContext
 fun HomeCommunity(navCtrl: NavHostController) {
     SystemStatusBarTransparent(true)
     Column(modifier = Modifier
+        .background(color = AppTheme.colors.primary)
         .fillMaxWidth()
         .fillMaxHeight()) {
         val typeList = listOf("关注", "推荐", "问答", "作业", "学生")
@@ -48,10 +51,10 @@ fun HomeCommunity(navCtrl: NavHostController) {
         val pagerState = rememberPagerState(initialPage = 0)
         Row(modifier = Modifier
             .statusBarsPadding()
-            .padding(13.dp, 0.dp)
+            .padding(AppTheme.dimen.safeSpace, 0.dp)
             .height(42.dp), verticalAlignment = Alignment.CenterVertically) {
             val modifier = Modifier
-                .background(color = colorResource(R.color.color_f6f8fa),
+                .background(color = AppTheme.colors.background,
                     shape = RoundedCornerShape(15.dp))
                 .height(31.dp)
             Row(modifier = modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
@@ -61,7 +64,7 @@ fun HomeCommunity(navCtrl: NavHostController) {
                 Text(
                     text = "搜索教程或资源关键词",
                     fontSize = 13.sp,
-                    color = colorResource(id = R.color.color_a6a9ad),
+                    color = AppTheme.colors.textSecondary,
                 )
             }
             Box(modifier = Modifier.width(10.dp))
@@ -71,7 +74,7 @@ fun HomeCommunity(navCtrl: NavHostController) {
                     contentDescription = null,
                     modifier = Modifier.padding(0.dp, 0.dp, 2.dp, 0.dp))
                 Text(text = "玩法", fontSize = 13.sp,
-                    color = colorResource(R.color.color_282a2e))
+                    color = AppTheme.colors.textPrimary)
             }
         }
         Row(modifier = Modifier
@@ -82,10 +85,8 @@ fun HomeCommunity(navCtrl: NavHostController) {
                 .padding(15.dp, 0.dp)
                 .fillMaxHeight()
             for ((index, title) in typeList.withIndex()) {
-                val color =
-                    colorResource(id = if (index == position) R.color.color_282a2e else R.color.color_a6a9ad)
                 HomeCommunitySingleTab(modifier = modifier,
-                    textColor = color,
+                    textColor = if (index == position) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
                     title = title,
                     index == position) {
                     position = index
@@ -135,7 +136,7 @@ fun HomeCommunitySingleTab(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(3.dp)
-                .background(colorResource(id = R.color.color_ff609d)))
+                .background(AppTheme.colors.confirm))
     }
 }
 

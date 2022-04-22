@@ -14,16 +14,12 @@ private var mToast: Toast? = null
  *
  * @param text String，显示的内容
  */
-fun showToast(text: String?) {
-    showToast(context = MyApplication.CONTEXT, text = text)
-}
-
-fun showToast(context: Context = MyApplication.CONTEXT, text: String?) {
+fun showToast(text: String?, context: Context = MyApplication.CONTEXT) {
     if (TextUtils.isEmpty(text)) return
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
-        showToast(context, text, Toast.LENGTH_SHORT)
+        showToast(text, Toast.LENGTH_SHORT, context)
     } else {
-        Handler(context.mainLooper).post { showToast(context, text, Toast.LENGTH_SHORT) }
+        Handler(context.mainLooper).post { showToast(text, Toast.LENGTH_SHORT, context) }
     }
 }
 
@@ -32,11 +28,11 @@ fun showToast(context: Context = MyApplication.CONTEXT, text: String?) {
  *
  * @param resId int，显示内容的字符串索引
  */
-fun showToast(context: Context = MyApplication.CONTEXT, resId: Int) {
+fun showToast(resId: Int, context: Context = MyApplication.CONTEXT) {
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
-        showToast(context, resId, Toast.LENGTH_SHORT)
+        showToast(resId, Toast.LENGTH_SHORT, context)
     } else {
-        Handler(context.mainLooper).post { showToast(context, resId, Toast.LENGTH_SHORT) }
+        Handler(context.mainLooper).post { showToast(resId, Toast.LENGTH_SHORT, context) }
     }
 }
 
@@ -45,12 +41,12 @@ fun showToast(context: Context = MyApplication.CONTEXT, resId: Int) {
  *
  * @param text String，显示的内容
  */
-fun showLongToast(context: Context? = MyApplication.CONTEXT, text: String?) {
+fun showLongToast(text: String?, context: Context? = MyApplication.CONTEXT) {
     if (context == null || TextUtils.isEmpty(text)) return
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
-        showToast(context, text, Toast.LENGTH_LONG)
+        showToast(text, Toast.LENGTH_LONG, context)
     } else {
-        Handler(context.mainLooper).post { showToast(context, text, Toast.LENGTH_LONG) }
+        Handler(context.mainLooper).post { showToast(text, Toast.LENGTH_LONG, context) }
     }
 }
 
@@ -59,16 +55,16 @@ fun showLongToast(context: Context? = MyApplication.CONTEXT, text: String?) {
  *
  * @param resId int，显示内容的字符串索引
  */
-fun showLongToast(context: Context? = MyApplication.CONTEXT, resId: Int) {
+fun showLongToast(resId: Int, context: Context? = MyApplication.CONTEXT) {
     if (context == null) return
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
-        showToast(context, resId, Toast.LENGTH_LONG)
+        showToast(resId, Toast.LENGTH_LONG, context)
     } else {
-        Handler(context.mainLooper).post { showToast(context, resId, Toast.LENGTH_LONG) }
+        Handler(context.mainLooper).post { showToast(resId, Toast.LENGTH_LONG, context) }
     }
 }
 
-private fun showToast(context: Context? = MyApplication.CONTEXT, text: String?, duration: Int) {
+private fun showToast(text: String?, duration: Int, context: Context? = MyApplication.CONTEXT) {
     if (TextUtils.isEmpty(text)) return
     cancelToast()
     if (mToast == null) {
@@ -80,7 +76,7 @@ private fun showToast(context: Context? = MyApplication.CONTEXT, text: String?, 
     mToast?.show()
 }
 
-fun showToast(context: Context? = MyApplication.CONTEXT, res: Int, duration: Int) {
+fun showToast(res: Int, duration: Int, context: Context? = MyApplication.CONTEXT) {
     cancelToast()
     if (mToast == null) {
         mToast = Toast.makeText(context, res, duration)

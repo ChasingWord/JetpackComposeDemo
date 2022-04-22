@@ -1,11 +1,10 @@
-package com.shrimp.compose.util
+package com.shrimp.base.utils
 
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.shrimp.network.utils.JsonUtil
 
 /**
  * 路由名称
@@ -32,11 +31,12 @@ object RouteUtils {
         var singleArgument = ""
         if (args != null) {
             when (args) {
-                is Parcelable -> {
-                    singleArgument = String.format("/%s", Uri.encode(JsonUtil.toJson(args)))
-                }
+//                is Parcelable -> {
+//                    singleArgument = String.format("/%s", Uri.encode(args))
+//                }
                 is String -> {
-                    singleArgument = String.format("/%s", args)
+                    singleArgument = String.format("/%s", Uri.encode(args))
+//                    singleArgument = String.format("/%s", args)
                 }
                 is Int -> {
                     singleArgument = String.format("/%s", args)

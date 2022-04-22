@@ -54,6 +54,7 @@ dependencies {
     debugImplementation depend["composeUITooling"]
     api depend["composeLiveData"]
     api depend["composeNavigation"]
+    api depend["composeConstraintlayout"]
 
     implementation depend["exifinterface"]
     api depend["activity"]
