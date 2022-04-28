@@ -1,14 +1,14 @@
 package com.shrimp.compose.util.paging
 
+import android.text.TextUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.shrimp.base.utils.L
-import com.shrimp.base.utils.NetUtil
-import com.shrimp.compose.MyApplication
-import com.shrimp.compose.util.showToast
+import com.shrimp.base.utils.showToast
 import com.shrimp.network.entity.base.HttpResult
 import com.shrimp.network.entity.base.ResponseResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 
 fun <T : Any> ViewModel.simplePager(
@@ -18,15 +18,17 @@ fun <T : Any> ViewModel.simplePager(
     return pager(config, 0) {
         val page = it.key ?: 0
         val response = try {
-            HttpResult.Success(callAction.invoke(page))
+            val responseResult = callAction.invoke(page)
+            if (responseResult.isSuccess())
+                HttpResult.Success(callAction.invoke(page))
+            else
+                HttpResult.Error(Exception(responseResult.getErrorMsg()))
         } catch (e: Exception) {
-            if (NetUtil.checkNet(MyApplication.CONTEXT).not()) {
-                showToast("没有网络,请重试")
-            } else {
-                showToast("请求失败，请重试")
-            }
-            L.e(e.toString())
-            HttpResult.Error(e)
+            L.e("request exception: $e")
+            if (e is CancellationException)
+                HttpResult.Error(Exception("cancel"))
+            else
+                HttpResult.Error(Exception(ResponseResult.getErrorMsg(e.toString())))
         }
         when (response) {
             is HttpResult.Success -> {
@@ -39,6 +41,9 @@ fun <T : Any> ViewModel.simplePager(
                 )
             }
             is HttpResult.Error -> {
+                val msg = response.exception.message
+                if (!TextUtils.isEmpty(msg) && "cancel" != msg)
+                    showToast(response.exception.message)
                 PagingSource.LoadResult.Error(response.exception)
             }
         }

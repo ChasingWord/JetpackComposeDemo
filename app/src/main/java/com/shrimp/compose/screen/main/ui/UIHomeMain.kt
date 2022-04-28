@@ -88,8 +88,8 @@ fun HomeMain(
             }
         }
         val list = remember { mutableListOf<TopicData>() }
-        for (i in 0..100)
-            list.add(TopicData(i % 3, false))
+        for (i in 0..10)
+            list.add(TopicData(i, i % 3))
 
         var isRefreshing by remember { mutableStateOf(false) }
         val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
@@ -119,7 +119,7 @@ fun HomeMain(
                 withContext(Dispatchers.IO) {
                     Thread.sleep(2000)
                     withContext(Dispatchers.Main) {
-                        list.add(0, TopicData(0, false))
+                        list.add(0, TopicData(list.size, 0))
                         isRefreshing = false
                     }
                 }
@@ -178,7 +178,7 @@ fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean, vmHomeMain: VMHo
                     .clickable(indication = null, interactionSource = remember {
                         MutableInteractionSource()
                     }, onClick = {
-                        vmHomeMain.changeHint()
+                        vmHomeMain.searchHint = "change"
                     })) {
                 Image(painter = painterResource(
                     id = if (isBlackType)

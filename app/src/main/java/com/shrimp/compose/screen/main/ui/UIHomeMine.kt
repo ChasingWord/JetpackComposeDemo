@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.load
 import coil.request.ImageRequest
-import com.shrimp.base.view.BaseActivity
+import com.shrimp.base.utils.showToast
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.AppFunInfo
 import com.shrimp.compose.bean.UserInfo
@@ -40,7 +41,7 @@ import com.shrimp.compose.ui.theme.AppTheme
  */
 @Composable
 fun HomeMine(
-    activity: BaseActivity,
+    activity: ComponentActivity,
     vmHomeMine: VMHomeMine = hiltViewModel(),
 ) {
     var userInfo by remember { mutableStateOf(UserInfo()) }
@@ -62,7 +63,10 @@ fun HomeMine(
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = AppTheme.colors.textPrimary,
-                modifier = Modifier.padding(AppTheme.dimen.safeSpace, 10.dp, AppTheme.dimen.safeSpace, 17.dp))
+                modifier = Modifier.padding(AppTheme.dimen.safeSpace,
+                    10.dp,
+                    AppTheme.dimen.safeSpace,
+                    17.dp))
         }
         item {
             HomeMineResourceFun()
@@ -85,7 +89,7 @@ fun HomeMine(
                     fontSize = 14.sp,
                     color = colorResource(id = R.color.color_0fa8eb),
                     modifier = Modifier.clickable {
-                        Toast.makeText(context, "官网...", Toast.LENGTH_SHORT).show()
+                        showToast("官网...")
                     })
             }
         }
@@ -137,9 +141,7 @@ fun HomeMineUserInfo(vmHomeMine: VMHomeMine, userInfo: UserInfo) {
                     modifier = Modifier
                         .clickable {
                             vmHomeMine.refresh()
-                            Toast
-                                .makeText(context, "签到了", Toast.LENGTH_SHORT)
-                                .show()
+                            showToast("签到了")
                         }
                         .padding(10.dp, 4.dp))
             }
@@ -233,29 +235,24 @@ fun HomeMineDynamicInfo(userInfo: UserInfo) {
 @Composable
 fun HomeMineResourceFun() {
     Row {
-        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_publish, name = "我发布的", funType = 0)
-        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_bought, name = "我买到的", funType = 1)
-        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_sale, name = "我卖出的", funType = 2)
+        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_publish, name = "我发布的"){
+            showToast("我发布的")
+        }
+        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_bought, name = "我买到的"){
+            showToast("我买到的")
+        }
+        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_sale, name = "我卖出的"){
+            showToast("我卖出的")
+        }
     }
 }
 
 @Composable
-fun RowScope.HomeMineResourceFunSingle(resId: Int, name: String, funType: Int) {
-    val context = LocalContext.current
+fun RowScope.HomeMineResourceFunSingle(resId: Int, name: String, clickListener: ()->Unit) {
     Column(modifier = Modifier
         .weight(1f)
         .clickable {
-            when (funType) {
-                0 -> Toast
-                    .makeText(context, name, Toast.LENGTH_SHORT)
-                    .show()
-                1 -> Toast
-                    .makeText(context, name, Toast.LENGTH_SHORT)
-                    .show()
-                else -> Toast
-                    .makeText(context, name, Toast.LENGTH_SHORT)
-                    .show()
-            }
+            clickListener.invoke()
         },
         horizontalAlignment = Alignment.CenterHorizontally) {
         Image(painter = painterResource(id = resId), contentDescription = null)
@@ -310,7 +307,7 @@ fun HomeMineEarnMoneyInfo() {
 
                 val context = LocalContext.current
                 TextButton(onClick = {
-                    Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+                    showToast("复制成功")
                 }, border = BorderStroke(1.dp, colorResource(id = R.color.color_ff609d)),
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.outlinedButtonColors(

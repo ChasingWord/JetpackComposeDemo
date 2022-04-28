@@ -19,12 +19,16 @@ fun AppThemeLayout(
         content = content)
 }
 
+/**
+ * colors会跟随主题夜间模式切换颜色，所以需要特殊处理成动态的
+ * 其它三个则是固定的写死的
+ */
 @Stable
 object AppTheme {
     val colors: Colors
         @Composable
         @ReadOnlyComposable
-        get() = getColors()
+        get() = LocalAppColors.current
 
     val typography: androidx.compose.material.Typography
         @Composable

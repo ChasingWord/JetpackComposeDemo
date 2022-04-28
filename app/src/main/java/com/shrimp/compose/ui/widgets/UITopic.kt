@@ -1,6 +1,7 @@
 package com.shrimp.compose.ui.widgets
 
-import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,9 +13,11 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -30,13 +33,13 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.shrimp.base.utils.GenericTools
 import com.shrimp.base.utils.RouteUtils
+import com.shrimp.base.utils.showToast
 import com.shrimp.compose.R
-import com.shrimp.compose.bean.TOPIC_DATA_TYPE_IMAGE
-import com.shrimp.compose.bean.TOPIC_DATA_TYPE_NEWS
-import com.shrimp.compose.bean.TOPIC_DATA_TYPE_RESOURCE
 import com.shrimp.compose.bean.TopicData
 import com.shrimp.compose.common.RouteName
+import com.shrimp.compose.common.bus_event.TopicPraiseEvent
 import com.shrimp.compose.ui.theme.AppTheme
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by chasing on 2022/3/23.
@@ -45,37 +48,46 @@ import com.shrimp.compose.ui.theme.AppTheme
 @Composable
 fun TopicItemPreview() {
     val navController = rememberNavController()
-    TopicItem(navController, TopicData(0, false))
+    TopicItem(navController, TopicData(0, 0))
 }
 
 @Composable
-fun TopicItem(navCtrl: NavHostController, topicData: TopicData) {
-    Box {
-        Column {
-            TopicItemUserInfo(navCtrl, topicData)
-            Text(text = "内容.....",
-                fontSize = 15.sp,
-                color = AppTheme.colors.textPrimary,
-                modifier = Modifier.padding(AppTheme.dimen.safeSpace, 12.dp, AppTheme.dimen.safeSpace, 0.dp))
-            when (topicData.type) {
-                TOPIC_DATA_TYPE_IMAGE -> TopicItemImgInfo(topicData.imgList)
-                TOPIC_DATA_TYPE_RESOURCE -> TopicItemResource()
-                TOPIC_DATA_TYPE_NEWS -> TopicItemNews()
-            }
-            TopicItemLabel(navCtrl)
-            TopicItemFunction()
-            Divider(color = AppTheme.colors.divider)
+fun TopicItem(
+    navCtrl: NavHostController,
+    topicData:
+    TopicData,
+) {
+    Column(modifier = Modifier.background(color = AppTheme.colors.primary)) {
+        TopicItemUserInfo(navCtrl, topicData)
+        Text(text = "内容.....",
+            fontSize = 15.sp,
+            color = AppTheme.colors.textPrimary,
+            modifier = Modifier.padding(AppTheme.dimen.safeSpace,
+                12.dp,
+                AppTheme.dimen.safeSpace,
+                0.dp))
+        when (topicData.type) {
+            TopicData.TOPIC_DATA_TYPE_IMAGE -> TopicItemImgInfo(topicData.imgList)
+            TopicData.TOPIC_DATA_TYPE_RESOURCE -> TopicItemResource()
+            TopicData.TOPIC_DATA_TYPE_NEWS -> TopicItemNews()
         }
+        TopicItemLabel(navCtrl)
+        TopicItemFunction(topicData)
+        Divider(color = AppTheme.colors.divider)
     }
 }
 
 @Composable
 fun TopicItemUserInfo(navCtrl: NavHostController, topicData: TopicData) {
     Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(AppTheme.dimen.safeSpace, 20.dp, AppTheme.dimen.safeSpace, 0.dp)) {
+        modifier = Modifier.padding(AppTheme.dimen.safeSpace,
+            20.dp,
+            AppTheme.dimen.safeSpace,
+            0.dp)) {
         Image(modifier = Modifier
             .size(31.dp)
-            .clip(CircleShape),
+            .clip(CircleShape)
+            .clickable { RouteUtils.navTo(navCtrl, RouteName.COMMUNITY_PERSONAL, 311) },
             painter = painterResource(id = R.mipmap.default_pic), contentDescription = null)
         Column(modifier = Modifier
             .weight(1f)
@@ -116,7 +128,10 @@ fun TopicItemImgInfo(imgList: List<String>) {
             width = GenericTools.px2dip(LocalContext.current, screenWidth - 34.dp.toPx())
         }
         for (index in 0..imgList.size / countOfSingleRow) {
-            Row(Modifier.padding(AppTheme.dimen.safeSpace, (if (index == 0) 10.dp else 4.dp), AppTheme.dimen.safeSpace, 0.dp)) {
+            Row(Modifier.padding(AppTheme.dimen.safeSpace,
+                (if (index == 0) 10.dp else 4.dp),
+                AppTheme.dimen.safeSpace,
+                0.dp)) {
                 for (i in 0 until countOfSingleRow) {
                     TopicItemImgSingle(imgUrl = imgList[index * countOfSingleRow + i],
                         modifier = Modifier
@@ -236,8 +251,11 @@ fun TopicItemNews() {
 }
 
 @Composable
-fun TopicItemLabel(navCtrl: NavHostController, ) {
-    Row(modifier = Modifier.padding(AppTheme.dimen.safeSpace, 10.dp, AppTheme.dimen.safeSpace, 0.dp)) {
+fun TopicItemLabel(navCtrl: NavHostController) {
+    Row(modifier = Modifier.padding(AppTheme.dimen.safeSpace,
+        10.dp,
+        AppTheme.dimen.safeSpace,
+        0.dp)) {
         Text(text = "标签", fontSize = 12.sp, color = colorResource(id = R.color.color_4b5057),
             modifier = Modifier
                 .border(1.dp, colorResource(id = R.color.color_p10282a2e), RoundedCornerShape(4.dp))
@@ -257,10 +275,9 @@ fun TopicItemLabel(navCtrl: NavHostController, ) {
 }
 
 @Composable
-fun TopicItemFunction() {
-    val context = LocalContext.current
+fun TopicItemFunction(topicData: TopicData) {
     Row(modifier = Modifier.height(62.dp)) {
-        TextButton(onClick = { Toast.makeText(context, "转发", Toast.LENGTH_SHORT).show() },
+        TextButton(onClick = { showToast("转发") },
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()) {
@@ -268,7 +285,7 @@ fun TopicItemFunction() {
                 modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
             Text(text = "转发", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
-        TextButton(onClick = { Toast.makeText(context, "评论", Toast.LENGTH_SHORT).show() },
+        TextButton(onClick = { showToast("评论") },
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()) {
@@ -276,12 +293,39 @@ fun TopicItemFunction() {
                 modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
             Text(text = "评论", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
-        TextButton(onClick = { Toast.makeText(context, "奶一口", Toast.LENGTH_SHORT).show() },
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()) {
-            Image(painter = painterResource(id = R.mipmap.praise), contentDescription = null,
-                modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
+
+        val transY: Float by animateFloatAsState(if (topicData.isPraise) -200f else 0f,
+            animationSpec = tween(durationMillis = if (topicData.isPraise) 2000 else 1))
+        Row(modifier = Modifier
+            .clickable {
+                EventBus
+                    .getDefault()
+                    .post(TopicPraiseEvent(topicData.id, !topicData.isPraise))
+            }
+            .weight(1f)
+            .fillMaxHeight(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically) {
+            Box {
+                Image(painter = painterResource(id = if (topicData.isPraise) R.mipmap.praise_pink else R.mipmap.praise),
+                    contentDescription = null,
+                    modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
+
+                if (topicData.isPraise) {
+                    for (i in 0..5) {
+                        val transX = i % 4 * 5
+                        val tempTransY = transY * (i % 5 * 0.2 + 1).toFloat()
+                        if (tempTransY > -190f)
+                            Image(
+                                painter = painterResource(id = R.mipmap.icon_like),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .offset(transX.dp, 0.dp)
+                                    .graphicsLayer(translationY = tempTransY)
+                            )
+                    }
+                }
+            }
             Text(text = "奶一口", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
     }

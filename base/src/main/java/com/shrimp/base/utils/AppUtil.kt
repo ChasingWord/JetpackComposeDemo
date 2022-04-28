@@ -23,9 +23,6 @@ import kotlinx.coroutines.*
 object AppUtil {
     private const val CODE_INSTALL_PACKAGES = 150
 
-    private lateinit var saveFilePath: String
-    private var isForceUpdate = false
-
     @SuppressLint("PackageManagerGetSignatures")
     private fun getPackageInfo(ctx: Context): PackageInfo? {
         var info: PackageInfo? = null
@@ -84,25 +81,13 @@ object AppUtil {
      * android11在请求完“安装未知应用”权限之后会清了应用数据
      * 所以需要将安装信息进行保存，在请求完权限的时候才能进行读取安装
      */
-    fun installApk(_saveFilePath: String, _isForceUpdate: Boolean) {
-        var saveFilePath = _saveFilePath
-        var isForceUpdate = _isForceUpdate
-        val activity: Activity = ActivityUtil.currentActivity()
-        if (TextUtils.isEmpty(saveFilePath)) {
-            if (!TextUtils.isEmpty(this@AppUtil.saveFilePath)) {
-                saveFilePath = this@AppUtil.saveFilePath
-                isForceUpdate = this@AppUtil.isForceUpdate
-            }
-        } else {
-            this@AppUtil.saveFilePath = saveFilePath
-            this@AppUtil.isForceUpdate = isForceUpdate
-        }
+    fun installApk(context: Context, saveFilePath: String, isForceUpdate: Boolean) {
         if (!TextUtils.isEmpty(saveFilePath)) {
             // 通过Intent安装APK文件
             val i = Intent(Intent.ACTION_VIEW)
             i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             i.setDataAndType(
-                FileUtil.getFileUri(activity, saveFilePath),
+                FileUtil.getFileUri(context, saveFilePath),
                 "application/vnd.android.package-archive"
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -110,11 +95,14 @@ object AppUtil {
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            activity.startActivity(i)
-            if (isForceUpdate) // 延迟退出应用，避免导致安装进程请求应用验证fileprovider权限失败
-                Handler(Looper.getMainLooper()).postDelayed({
-                    ActivityUtil.appExit(activity)
-                }, 1000)
+            try {
+                context.startActivity(i)
+                if (isForceUpdate) // 延迟退出应用，避免导致安装进程请求应用验证fileprovider权限失败
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        ActivityUtil.appExit(context)
+                    }, 1000)
+            } catch (e: Exception) {
+            }
         }
     }
 

@@ -1,11 +1,11 @@
-package com.shrimp.compose.util
+package com.shrimp.base.utils
 
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.widget.Toast
-import com.shrimp.compose.MyApplication
+import com.shrimp.base.BaseApplication
 
 private var mToast: Toast? = null
 
@@ -14,7 +14,7 @@ private var mToast: Toast? = null
  *
  * @param text String，显示的内容
  */
-fun showToast(text: String?, context: Context = MyApplication.CONTEXT) {
+fun showToast(text: String?, context: Context = BaseApplication.CONTEXT) {
     if (TextUtils.isEmpty(text)) return
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
         showToast(text, Toast.LENGTH_SHORT, context)
@@ -28,7 +28,7 @@ fun showToast(text: String?, context: Context = MyApplication.CONTEXT) {
  *
  * @param resId int，显示内容的字符串索引
  */
-fun showToast(resId: Int, context: Context = MyApplication.CONTEXT) {
+fun showToast(resId: Int, context: Context = BaseApplication.CONTEXT) {
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
         showToast(resId, Toast.LENGTH_SHORT, context)
     } else {
@@ -41,7 +41,7 @@ fun showToast(resId: Int, context: Context = MyApplication.CONTEXT) {
  *
  * @param text String，显示的内容
  */
-fun showLongToast(text: String?, context: Context? = MyApplication.CONTEXT) {
+fun showLongToast(text: String?, context: Context? = BaseApplication.CONTEXT) {
     if (context == null || TextUtils.isEmpty(text)) return
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
         showToast(text, Toast.LENGTH_LONG, context)
@@ -55,7 +55,7 @@ fun showLongToast(text: String?, context: Context? = MyApplication.CONTEXT) {
  *
  * @param resId int，显示内容的字符串索引
  */
-fun showLongToast(resId: Int, context: Context? = MyApplication.CONTEXT) {
+fun showLongToast(resId: Int, context: Context? = BaseApplication.CONTEXT) {
     if (context == null) return
     if (Thread.currentThread() === Looper.getMainLooper().thread) {
         showToast(resId, Toast.LENGTH_LONG, context)
@@ -64,26 +64,16 @@ fun showLongToast(resId: Int, context: Context? = MyApplication.CONTEXT) {
     }
 }
 
-private fun showToast(text: String?, duration: Int, context: Context? = MyApplication.CONTEXT) {
+private fun showToast(text: String?, duration: Int, context: Context? = BaseApplication.CONTEXT) {
     if (TextUtils.isEmpty(text)) return
     cancelToast()
-    if (mToast == null) {
-        mToast = Toast.makeText(context, text, duration)
-    } else {
-        mToast?.setText(text)
-        mToast?.duration = duration
-    }
+    mToast = Toast.makeText(context, text, duration)
     mToast?.show()
 }
 
-fun showToast(res: Int, duration: Int, context: Context? = MyApplication.CONTEXT) {
+fun showToast(res: Int, duration: Int, context: Context? = BaseApplication.CONTEXT) {
     cancelToast()
-    if (mToast == null) {
-        mToast = Toast.makeText(context, res, duration)
-    } else {
-        mToast?.setText(res)
-        mToast?.duration = duration
-    }
+    mToast = Toast.makeText(context, res, duration)
     mToast?.show()
 }
 

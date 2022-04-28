@@ -17,10 +17,8 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.webkit.CookieManager
 import android.widget.EditText
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.shrimp.base.R
@@ -29,56 +27,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.*
 import kotlin.system.exitProcess
 
 /**
  * Created by chasing on 2021/10/22.
  */
 object ActivityUtil {
-    val oneClickUtil = OneClickUtil()
-    private var activityStack: Stack<Activity> = Stack()
-
     fun getNotificationManager(context: Context): NotificationManager {
         return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    }
-
-    /**
-     * 添加Activity到堆栈
-     */
-    fun addActivity(activity: Activity) {
-        activityStack.add(activity)
-    }
-
-    /**
-     * 获取当前Activity并且是还未finish的
-     */
-    fun currentActivity(): Activity {
-        var activity = activityStack.lastElement()
-        if (activity!!.isFinishing && activityStack.size > 1) {
-            activity = activityStack.elementAt(activityStack.size - 2)
-        }
-        return activity
-    }
-
-    fun removeActivity(activity: Activity?) {
-        if (null != activity) activityStack.remove(activity)
-    }
-
-    /**
-     * 结束所有Activity
-     */
-    fun finishAllActivity() {
-        try {
-            for (i in activityStack.indices.reversed()) {
-                if (!activityStack[i].isFinishing) {
-                    activityStack[i].finish()
-                }
-            }
-            activityStack.clear()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
     /**
@@ -87,7 +43,6 @@ object ActivityUtil {
     fun appExit(context: Context) {
         try {
             getNotificationManager(context).cancelAll() //退出应用程序取消所有状态栏消息
-            finishAllActivity()
             val activityMgr = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             activityMgr.killBackgroundProcesses(context.packageName)
             exitProcess(0)
@@ -100,7 +55,7 @@ object ActivityUtil {
         val copy = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val data = ClipData.newPlainText(content, content)
         copy.setPrimaryClip(data)
-        showToast(context, "复制成功")
+        showToast("复制成功")
     }
 
     //获取粘贴板文本
@@ -111,25 +66,6 @@ object ActivityUtil {
             0
         ).text.toString()
         return ""
-    }
-
-    //清除WebView的cookies数据.防止下一个登录用户还是传递上一个用户的cookies记录造成网页中信息紊乱。
-    fun clearWebViewCookies() {
-        //清除网页的cookie记录
-        //CookieSyncManager.createInstance(ToolboxWebViewActivity);
-        val cookieManager = CookieManager.getInstance()
-        //清除cookie
-        cookieManager.removeSessionCookies(null)
-        cookieManager.removeAllCookies(null)
-    }
-
-    // 统一写在一个地方使用Toast，方便以后统一修改成其它样式
-    fun showToast(context: Context, @StringRes stringId: Int) {
-        Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show()
-    }
-
-    fun showToast(context: Context, message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     /**
@@ -193,7 +129,7 @@ object ActivityUtil {
             val telIntent = Intent(Intent.ACTION_CALL, telUri)
             context.startActivity(telIntent)
         } catch (e: Exception) {
-            showToast(context, "拨打电话失败！")
+            showToast("拨打电话失败！")
         }
     }
 
@@ -220,7 +156,7 @@ object ActivityUtil {
                 return filePath
             }
         } catch (e: Exception) {
-            showToast(activity, activity.resources.getString(R.string.shrimp_photo_can_not_write))
+            showToast(R.string.shrimp_photo_can_not_write)
         }
         return null
     }
@@ -246,7 +182,7 @@ object ActivityUtil {
         widthRatio: Int,
         heightRatio: Int,
         outputX: Int,
-        outputY: Int
+        outputY: Int,
     ): String? {
         try {
             val uri = FileUtil.getFileUri(activity, picPath)
@@ -266,15 +202,19 @@ object ActivityUtil {
                     intent.putExtra("outputY", outputY)
                 }
                 intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
-                //android11图片裁剪保存的时候不能访问应用私有目录，只能保存在共有目录
-                val uriTempFile =
+                val uriTempFile = if (FileUtil.isBelow29()) {
+                    // 部分低于29的手机不能直接保存到公共目录，会报权限错误，所以需要区分保存
+                    Uri.fromFile(File(FileUtil.getCachePath(activity) + FileUtil.getPhotoFileName()))
+                } else {
+                    //android11图片裁剪保存的时候不能访问应用私有目录，只能保存在共有目录
                     FileUtil.getDownloadPicUri(activity, FileUtil.getPhotoFileName())
+                }
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, uriTempFile)
                 activity.startActivityForResult(intent, requestCodeCropPhoto)
                 return FileUtil.getFilePathByUri(activity, uriTempFile)
             }
         } catch (ignored: Exception) {
-            showToast(activity, activity.resources.getString(R.string.shrimp_photo_can_not_write))
+            showToast(R.string.shrimp_photo_can_not_write)
         }
         return null
     }
@@ -348,7 +288,7 @@ object ActivityUtil {
         title: String,
         content: String,
         intent: Intent,
-        notificationId: Int
+        notificationId: Int,
     ) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP) //会清除跳转目标activity及之上的所有activity
         val clickIntent = Intent(context, NotificationClickReceiver::class.java)
@@ -370,7 +310,7 @@ object ActivityUtil {
         title: String,
         content: String,
         clickIntent: Intent,
-        notificationId: Int
+        notificationId: Int,
     ) {
         val curTime = System.currentTimeMillis()
         val needSound = curTime - PRE_SHOW_NOTIFICATION_TIME > 1000
@@ -408,7 +348,7 @@ object ActivityUtil {
         title: String,
         content: String,
         clickIntent: Intent,
-        notificationId: Int
+        notificationId: Int,
     ) {
 //        long curTime = System.currentTimeMillis();
 //        boolean needSound = curTime - PRE_SHOW_NOTIFICATION_TIME > 1000;

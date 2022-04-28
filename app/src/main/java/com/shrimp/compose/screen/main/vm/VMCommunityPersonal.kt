@@ -8,28 +8,34 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.shrimp.compose.bean.TopicData
 import com.shrimp.compose.engine.ViewAction
 import com.shrimp.compose.util.paging.simplePager
-import com.shrimp.network.RequestManager
-import com.shrimp.network.entity.res.Tags
+import com.shrimp.network.entity.base.ResponseResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Created by chasing on 2022/4/20.
+ * Created by chasing on 2022/4/25.
  */
 @HiltViewModel
-class VMLabel @Inject constructor() : ViewModel() {
+class VMCommunityPersonal @Inject constructor() : ViewModel() {
     private val pager by lazy {
         simplePager {
             delay(2000)
-            RequestManager.getCourseTagsMenuByUserId("744677", 311)
+            val responseResult = ResponseResult<List<TopicData>>()
+            responseResult.code = "00"
+            val topicDataList = ArrayList<TopicData>()
+            for (i in 0..10)
+                topicDataList.add(TopicData(i, i % 3))
+            responseResult.data = topicDataList
+            responseResult
         }.cachedIn(viewModelScope)
     }
 
-    var viewStates by mutableStateOf(LabelViewState(pagingData = pager))
+    var viewStates by mutableStateOf(CommunityPersonalViewState(pagingData = pager))
         private set
 
     init {
@@ -52,8 +58,8 @@ class VMLabel @Inject constructor() : ViewModel() {
     }
 }
 
-data class LabelViewState(
-    val pagingData: Flow<PagingData<Tags>>,
+data class CommunityPersonalViewState(
+    val pagingData: Flow<PagingData<TopicData>>,
     val isRefreshing: Boolean = false,
     val listState: LazyListState = LazyListState(),
 )

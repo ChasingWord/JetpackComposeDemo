@@ -4,6 +4,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 
+val color_transparent = Color(0x00000000)
+
 val color_ffffff = Color(0xffffffff)
 val color_f6f8fa = Color(0xfff6f8fa)
 val color_f5f5f5 = Color(0xfff5f5f5)

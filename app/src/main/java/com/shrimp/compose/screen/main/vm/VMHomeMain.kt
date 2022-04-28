@@ -4,12 +4,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.shrimp.base.utils.L
-import com.shrimp.base.view.BaseViewModel
 import com.shrimp.compose.engine.EventScrollToTop
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -21,34 +18,24 @@ import javax.inject.Inject
  * Created by chasing on 2022/4/13.
  */
 @HiltViewModel
-class VMHomeMain @Inject constructor() : BaseViewModel() {
+class VMHomeMain @Inject constructor() : ViewModel() {
     var searchHint by mutableStateOf("搜索教程或资源关键词")
     var totalScroll = MutableLiveData(0f)
     var scrollState: LazyListState? = null
 
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        super.onStateChanged(source, event)
-        when (event) {
-            Lifecycle.Event.ON_CREATE -> {
-                L.e("ON_CREATE");
-                EventBus.getDefault().register(this)
-            }
-            Lifecycle.Event.ON_DESTROY -> {
-                EventBus.getDefault().unregister(this)
-            }
-            else -> {
-
-            }
-        }
+    init {
+        EventBus.getDefault().register(this)
     }
 
-    fun changeHint() {
-        searchHint = "change"
+    override fun onCleared() {
+        super.onCleared()
+        EventBus.getDefault().unregister(this)
     }
 
     @Subscribe
     fun scrollToTop(event: EventScrollToTop) {
         if (event.type == EventScrollToTop.TYPE_HOME_MAIN) {
+            totalScroll.value = 0f
             viewModelScope.launch { scrollState?.scrollToItem(0) }
         }
     }

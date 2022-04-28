@@ -11,6 +11,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
+import com.shrimp.compose.common.RouteName
 
 /**
  * Created by chasing on 2022/4/21.
@@ -29,7 +30,12 @@ fun NavGraphBuilder.composableWithDefaultAnim(
         arguments = arguments,
         deepLinks = deepLinks,
         enterTransition = {
-            if (this.initialState.destination.parent?.route?.equals(this.targetState.destination.parent?.route) == false)
+            val initialRoutSplit: List<String>? = this.initialState.destination.route?.split("_");
+            val targetRoutSplit: List<String>? = this.targetState.destination.route?.split("_");
+            if (initialRoutSplit == null || targetRoutSplit == null ||
+                initialRoutSplit.size <= 1 || targetRoutSplit.size <= 1 ||
+                initialRoutSplit[0] != targetRoutSplit[0]
+            )
                 slideInHorizontally(animationSpec = tween(500), initialOffsetX = {
                     it//初始位置在正一屏的位置，也就是说初始位置我们看不到，动画动起来的时候会从正一屏位置滑动到屏幕位置
                 })
@@ -38,7 +44,12 @@ fun NavGraphBuilder.composableWithDefaultAnim(
             }
         },
         exitTransition = {
-            if (this.targetState.destination.parent?.route?.equals(this.initialState.destination.parent?.route) == false)
+            val initialRoutSplit: List<String>? = this.initialState.destination.route?.split("_");
+            val targetRoutSplit: List<String>? = this.targetState.destination.route?.split("_");
+            if (initialRoutSplit == null || targetRoutSplit == null ||
+                initialRoutSplit.size <= 1 || targetRoutSplit.size <= 1 ||
+                initialRoutSplit[0] != targetRoutSplit[0]
+            )
                 slideOutHorizontally(animationSpec = tween(500), targetOffsetX = {
                     -it
                 })
@@ -47,7 +58,12 @@ fun NavGraphBuilder.composableWithDefaultAnim(
             }
         },
         popEnterTransition = {
-            if (this.initialState.destination.parent?.route?.equals(this.targetState.destination.parent?.route) == false)
+            val initialRoutSplit: List<String>? = this.initialState.destination.route?.split("_");
+            val targetRoutSplit: List<String>? = this.targetState.destination.route?.split("_");
+            if (initialRoutSplit == null || targetRoutSplit == null ||
+                initialRoutSplit.size <= 1 || targetRoutSplit.size <= 1 ||
+                initialRoutSplit[0] != targetRoutSplit[0]
+            )
                 slideInHorizontally(animationSpec = tween(500), initialOffsetX = {
                     -it//初始位置在正一屏的位置，也就是说初始位置我们看不到，动画动起来的时候会从正一屏位置滑动到屏幕位置
                 })
@@ -56,7 +72,12 @@ fun NavGraphBuilder.composableWithDefaultAnim(
             }
         },
         popExitTransition = {
-            if (this.targetState.destination.parent?.route?.equals(this.initialState.destination.parent?.route) == false)
+            val initialRoutSplit: List<String>? = this.initialState.destination.route?.split("_");
+            val targetRoutSplit: List<String>? = this.targetState.destination.route?.split("_");
+            if (initialRoutSplit == null || targetRoutSplit == null ||
+                initialRoutSplit.size <= 1 || targetRoutSplit.size <= 1 ||
+                initialRoutSplit[0] != targetRoutSplit[0]
+            )
                 slideOutHorizontally(animationSpec = tween(500), targetOffsetX = {
                     it
                 })

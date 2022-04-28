@@ -7,4 +7,5 @@ import androidx.compose.ui.unit.dp
  */
 class Dimen {
     val safeSpace = 13.dp
+    val toolbarHeight = 44.dp
 }

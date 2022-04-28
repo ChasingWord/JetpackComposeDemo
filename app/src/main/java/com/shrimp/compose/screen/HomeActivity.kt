@@ -1,23 +1,24 @@
 package com.shrimp.compose.screen
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
-import com.shrimp.base.view.BaseActivity
-import com.shrimp.compose.screen.start.ui.StartPage
+import androidx.fragment.app.FragmentActivity
+import com.shrimp.compose.screen.start.StartPage
 import com.shrimp.compose.ui.theme.AppTheme
 import com.shrimp.compose.ui.theme.AppThemeLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeActivity : BaseActivity() {
+class HomeActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context = this
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
@@ -30,5 +31,15 @@ class HomeActivity : BaseActivity() {
                 }
             }
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override
+            fun handleOnBackPressed() {
+                val intent = Intent(Intent.ACTION_MAIN);
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
+                intent.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent);
+            }
+        })
     }
 }

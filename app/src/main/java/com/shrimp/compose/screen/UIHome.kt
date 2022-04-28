@@ -1,5 +1,6 @@
 package com.shrimp.compose.screen
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -14,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,22 +24,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.shrimp.base.utils.L
-import com.shrimp.base.view.BaseActivity
-import com.shrimp.compose.engine.EventScrollToTop
+import com.shrimp.base.utils.RouteUtils
 import com.shrimp.compose.common.BottomNavRoute
 import com.shrimp.compose.common.RouteName
+import com.shrimp.compose.engine.EventScrollToTop
 import com.shrimp.compose.screen.main.ui.*
 import com.shrimp.compose.ui.theme.AppTheme
 import com.shrimp.compose.ui.theme.color_a6a9ad
 import com.shrimp.compose.ui.theme.color_ff609d
 import com.shrimp.compose.ui.widgets.AppSnackBar
 import com.shrimp.compose.ui.widgets.composableWithDefaultAnim
-import com.shrimp.base.utils.RouteUtils
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -47,7 +44,7 @@ import org.greenrobot.eventbus.EventBus
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Home(activity: BaseActivity) {
+fun Home(activity: ComponentActivity) {
     val navCtrl = rememberAnimatedNavController()
     val navBackStackEntry by navCtrl.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -56,7 +53,7 @@ fun Home(activity: BaseActivity) {
     Scaffold(modifier = Modifier.background(AppTheme.colors.primary),
         bottomBar = {
             when (currentDestination?.route) {
-                RouteName.ROOT -> BottomNavBarView(navCtrl = navCtrl)
+                RouteName.HOME -> BottomNavBarView(navCtrl = navCtrl)
                 RouteName.COMMUNITY -> BottomNavBarView(navCtrl = navCtrl)
                 RouteName.MESSAGE -> BottomNavBarView(navCtrl = navCtrl)
                 RouteName.MINE -> BottomNavBarView(navCtrl = navCtrl)
@@ -65,11 +62,12 @@ fun Home(activity: BaseActivity) {
         content = {
             AnimatedNavHost(
                 navController = navCtrl,
-                startDestination = RouteName.ROOT,
+                startDestination = RouteName.HOME,
                 modifier = Modifier
+                    .padding(0.dp, 0.dp, 0.dp, it.calculateBottomPadding())
                     .fillMaxWidth()
                     .fillMaxHeight(),
-                route = "root",
+                route = RouteName.NAV_ROOT,
                 enterTransition = {
                     fadeIn(animationSpec = tween(1))
                 },
@@ -77,8 +75,12 @@ fun Home(activity: BaseActivity) {
                     fadeOut(animationSpec = tween(1))
                 },
             ) {
-                composableWithDefaultAnim(RouteName.ROOT) { HomeMain(navCtrl, scaffoldState) }
-                composableWithDefaultAnim(RouteName.COMMUNITY) { HomeCommunity(navCtrl) }
+                composableWithDefaultAnim(RouteName.HOME) {
+                    HomeMain(navCtrl, scaffoldState)
+                }
+                composableWithDefaultAnim(RouteName.COMMUNITY) {
+                    HomeCommunity(navCtrl)
+                }
                 composableWithDefaultAnim(RouteName.MESSAGE) {
                     Text(text = "消息",
                         modifier = Modifier
@@ -87,17 +89,25 @@ fun Home(activity: BaseActivity) {
                         fontSize = 17.sp,
                         color = AppTheme.colors.textPrimary)
                 }
-                composableWithDefaultAnim(RouteName.MINE) { HomeMine(activity) }
+                composableWithDefaultAnim(RouteName.MINE) {
+                    HomeMine(activity)
+                }
 
-                navigation(RouteName.LABEL, route = "root_label"){
-                    composableWithDefaultAnim(
-                        "${RouteName.LABEL}/{userId}",
-                        arguments = listOf(navArgument("userId") { type = NavType.IntType }),
-                    ) { navBackStackEntry ->
-                        Label(navCtrl,
-                            scaffoldState,
-                            navBackStackEntry.arguments?.getInt("userId") ?: 0)
-                    }
+                composableWithDefaultAnim(
+                    "${RouteName.LABEL}/{userId}",
+                    arguments = listOf(navArgument("userId") { type = NavType.IntType }),
+                ) { navBackStackEntry ->
+                    Label(navCtrl,
+                        scaffoldState,
+                        navBackStackEntry.arguments?.getInt("userId") ?: 0)
+                }
+                composableWithDefaultAnim(
+                    "${RouteName.COMMUNITY_PERSONAL}/{userId}",
+                    arguments = listOf(navArgument("userId") { type = NavType.IntType }),
+                ) { navBackStackEntry ->
+                    CommunityPersonal(navCtrl,
+                        scaffoldState,
+                        navBackStackEntry.arguments?.getInt("userId") ?: 0)
                 }
             }
         },
@@ -120,7 +130,6 @@ fun BottomNavBarView(navCtrl: NavHostController) {
         BottomNavRoute.Profile
     )
     BottomNavigation {
-
         val navBackStackEntry by navCtrl.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         bottomNavList.forEach { screen ->
@@ -146,13 +155,14 @@ fun BottomNavBarView(navCtrl: NavHostController) {
                     if (currentDestination?.route != screen.routeName) {
                         RouteUtils.navTo(navCtrl,
                             screen.routeName,
-                            backStackRouteName = RouteName.ROOT)
+                            backStackRouteName = currentDestination?.route,
+                            isInclusive = true)
                     } else {
                         when (screen.routeName) {
-                            RouteName.ROOT -> EventBus.getDefault()
+                            RouteName.HOME -> EventBus.getDefault()
                                 .post(EventScrollToTop(EventScrollToTop.TYPE_HOME_MAIN))
                             RouteName.COMMUNITY -> EventBus.getDefault()
-                                .post(EventScrollToTop(EventScrollToTop.TYPE_HOME_MAIN))
+                                .post(EventScrollToTop(EventScrollToTop.TYPE_HOME_COMMUNITY))
                         }
                     }
                 })

@@ -462,7 +462,7 @@ object FileUtil {
     fun openFile(context: Context, filePath: String) {
         if (!exists(context, filePath)) {
             //如果文件不存在
-            ActivityUtil.showToast(context, "打开失败，原因：文件已经被移动或者删除")
+            showToast("打开失败，原因：文件已经被移动或者删除")
         } else {
             try {
                 val fileUri = getFileUri(context, filePath)
@@ -475,7 +475,7 @@ object FileUtil {
                     context.startActivity(intent)
                 }
             } catch (e: Exception) {
-                ActivityUtil.showToast(context, "未找到可以打开该文件的软件")
+                showToast("未找到可以打开该文件的软件")
             }
         }
     }
@@ -913,16 +913,17 @@ object FileUtil {
 
     //获取公共文件对应的Uri -- 运行在子线程，采用监听器回调结果
     fun getFileUri(
-        context: Context?,
+        context: Context,
         path: String,
         listener: OnFileUriBackListener
     ) {
-        if (context == null || TextUtils.isEmpty(path)) {
-            throw NullPointerException()
-        }
-        //Android10以下需要有读权限才能进行操作ContentResolver.query
-        if (context is Activity && ActivityUtil.checkNeedRequestReadStoragePermission(context)) {
-            listener.onFileUriBack(null)
+        if (isBelow29()){
+            ThreadPoolUtil.execute(object : ComparableRunnable(){
+                override fun run() {
+                    val finalUri = getFileUriBelow29(context, path)
+                    ThreadPoolUtil.executeOnMainThread { listener.onFileUriBack(finalUri) }
+                }
+            })
         } else {
             ThreadPoolUtil.execute(object : ComparableRunnable() {
                 override fun run() {
@@ -1007,7 +1008,8 @@ object FileUtil {
                     )
                 try {
                     fos = FileOutputStream(savePath)
-                    if (!isBelow29()) { //android10以上
+                    if (!isBelow29()) {
+                        //android10以上
                         android.os.FileUtils.copy(`is`, fos)
                     } else {
                         val bytes = ByteArray(2048)

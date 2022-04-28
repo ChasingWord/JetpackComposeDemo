@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -14,10 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -27,8 +26,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.TopicData
+import com.shrimp.compose.screen.main.vm.VMHomeCommunity
 import com.shrimp.compose.ui.theme.AppTheme
-import com.shrimp.compose.ui.theme.color_f6f8fa
 import com.shrimp.compose.ui.widgets.TopicItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,19 +39,21 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HomeCommunity(navCtrl: NavHostController) {
+fun HomeCommunity(
+    navCtrl: NavHostController,
+    vmHomeCommunity: VMHomeCommunity = hiltViewModel(),
+) {
     SystemStatusBarTransparent(true)
     Column(modifier = Modifier
         .background(color = AppTheme.colors.primary)
         .fillMaxWidth()
         .fillMaxHeight()) {
         val typeList = listOf("关注", "推荐", "问答", "作业", "学生")
-        var position by remember { mutableStateOf(0) }
         val pagerState = rememberPagerState(initialPage = 0)
         Row(modifier = Modifier
             .statusBarsPadding()
             .padding(AppTheme.dimen.safeSpace, 0.dp)
-            .height(42.dp), verticalAlignment = Alignment.CenterVertically) {
+            .height(AppTheme.dimen.toolbarHeight), verticalAlignment = Alignment.CenterVertically) {
             val modifier = Modifier
                 .background(color = AppTheme.colors.background,
                     shape = RoundedCornerShape(15.dp))
@@ -86,12 +87,12 @@ fun HomeCommunity(navCtrl: NavHostController) {
                 .fillMaxHeight()
             for ((index, title) in typeList.withIndex()) {
                 HomeCommunitySingleTab(modifier = modifier,
-                    textColor = if (index == position) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
+                    textColor = if (index == vmHomeCommunity.position) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
                     title = title,
-                    index == position) {
-                    position = index
+                    index == vmHomeCommunity.position) {
+                    vmHomeCommunity.position = index
                     CoroutineScope(Dispatchers.Main).launch {
-                        pagerState.scrollToPage(position,
+                        pagerState.scrollToPage(vmHomeCommunity.position,
                             0f)
                     }
                 }
@@ -102,14 +103,14 @@ fun HomeCommunity(navCtrl: NavHostController) {
                 .fillMaxHeight()
                 .fillMaxWidth()) { index ->
             when (index) {
-                0 -> HomeCommunityFocus(navCtrl)
-                1 -> HomeCommunityRecommend(navCtrl)
-                2 -> HomeCommunityAnswer(navCtrl)
-                3 -> HomeCommunityWork(navCtrl)
-                4 -> HomeCommunityStudent(navCtrl)
+                0 -> HomeCommunityFocus(navCtrl, vmHomeCommunity)
+                1 -> HomeCommunityRecommend(navCtrl, vmHomeCommunity)
+                2 -> HomeCommunityAnswer(navCtrl, vmHomeCommunity)
+                3 -> HomeCommunityWork(navCtrl, vmHomeCommunity)
+                4 -> HomeCommunityStudent(navCtrl, vmHomeCommunity)
             }
         }
-        position = pagerState.currentPage
+        vmHomeCommunity.position = pagerState.currentPage
     }
 }
 
@@ -140,23 +141,16 @@ fun HomeCommunitySingleTab(
     }
 }
 
-var HomeCommunityFocusScrollState: LazyListState? = null
-var HomeCommunityRecommendScrollState: LazyListState? = null
-var HomeCommunityAnswerScrollState: LazyListState? = null
-var HomeCommunityWorkScrollState: LazyListState? = null
-var HomeCommunityStudentScrollState: LazyListState? = null
-
 @Composable
-fun HomeCommunityFocus(navCtrl: NavHostController) {
-    val list = remember { mutableListOf<TopicData>() }
-    for (i in 0..100)
-        list.add(TopicData(i % 3, false))
+fun HomeCommunityFocus(navCtrl: NavHostController, vmHomeCommunity: VMHomeCommunity) {
+    val list = vmHomeCommunity.focusData
 
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
     SwipeRefresh(state = swipeRefreshState, onRefresh = { isRefreshing = true }) {
-        HomeCommunityFocusScrollState = rememberLazyListState()
-        LazyColumn(state = HomeCommunityFocusScrollState!!) {
+        if (vmHomeCommunity.focusScrollState == null)
+            vmHomeCommunity.focusScrollState = rememberLazyListState()
+        LazyColumn(state = vmHomeCommunity.focusScrollState!!) {
             items(list.size) {
                 TopicItem(navCtrl, list[it])
             }
@@ -165,9 +159,9 @@ fun HomeCommunityFocus(navCtrl: NavHostController) {
     if (isRefreshing) {
         LaunchedEffect("Refresh") {
             withContext(Dispatchers.IO) {
-                Thread.sleep(2000)
+                Thread.sleep(1000)
                 withContext(Dispatchers.Main) {
-                    list.add(0, TopicData(0, false))
+                    vmHomeCommunity.focusData.add(0, TopicData(vmHomeCommunity.focusData.size, 1))
                     isRefreshing = false
                 }
             }
@@ -176,16 +170,17 @@ fun HomeCommunityFocus(navCtrl: NavHostController) {
 }
 
 @Composable
-fun HomeCommunityRecommend(navCtrl: NavHostController) {
+fun HomeCommunityRecommend(navCtrl: NavHostController, vmHomeCommunity: VMHomeCommunity) {
     val list = remember { mutableListOf<TopicData>() }
     for (i in 0..100)
-        list.add(TopicData(i % 3, false))
+        list.add(TopicData(i, i % 3))
 
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
     SwipeRefresh(state = swipeRefreshState, onRefresh = { isRefreshing = true }) {
-        HomeCommunityRecommendScrollState = rememberLazyListState()
-        LazyColumn(state = HomeCommunityRecommendScrollState!!) {
+        if (vmHomeCommunity.recommendScrollState == null)
+            vmHomeCommunity.recommendScrollState = rememberLazyListState()
+        LazyColumn(state = vmHomeCommunity.recommendScrollState!!) {
             items(list.size) {
                 TopicItem(navCtrl, list[it])
             }
@@ -194,9 +189,9 @@ fun HomeCommunityRecommend(navCtrl: NavHostController) {
     if (isRefreshing) {
         LaunchedEffect("Refresh") {
             withContext(Dispatchers.IO) {
-                Thread.sleep(2000)
+                Thread.sleep(1000)
                 withContext(Dispatchers.Main) {
-                    list.add(0, TopicData(0, false))
+                    list.add(0, TopicData(list.size, 0))
                     isRefreshing = false
                 }
             }
@@ -205,16 +200,17 @@ fun HomeCommunityRecommend(navCtrl: NavHostController) {
 }
 
 @Composable
-fun HomeCommunityAnswer(navCtrl: NavHostController) {
+fun HomeCommunityAnswer(navCtrl: NavHostController, vmHomeCommunity: VMHomeCommunity) {
     val list = remember { mutableListOf<TopicData>() }
     for (i in 0..100)
-        list.add(TopicData(i % 3, false))
+        list.add(TopicData(i, i % 3))
 
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
     SwipeRefresh(state = swipeRefreshState, onRefresh = { isRefreshing = true }) {
-        HomeCommunityAnswerScrollState = rememberLazyListState()
-        LazyColumn(state = HomeCommunityAnswerScrollState!!) {
+        if (vmHomeCommunity.answerScrollState == null)
+            vmHomeCommunity.answerScrollState = rememberLazyListState()
+        LazyColumn(state = vmHomeCommunity.answerScrollState!!) {
             items(list.size) {
                 TopicItem(navCtrl, list[it])
             }
@@ -225,7 +221,7 @@ fun HomeCommunityAnswer(navCtrl: NavHostController) {
             withContext(Dispatchers.IO) {
                 Thread.sleep(2000)
                 withContext(Dispatchers.Main) {
-                    list.add(0, TopicData(0, false))
+                    list.add(0, TopicData(list.size, 0))
                     isRefreshing = false
                 }
             }
@@ -234,16 +230,17 @@ fun HomeCommunityAnswer(navCtrl: NavHostController) {
 }
 
 @Composable
-fun HomeCommunityWork(navCtrl: NavHostController) {
+fun HomeCommunityWork(navCtrl: NavHostController, vmHomeCommunity: VMHomeCommunity) {
     val list = remember { mutableListOf<TopicData>() }
     for (i in 0..100)
-        list.add(TopicData(i % 3, false))
+        list.add(TopicData(i, i % 3))
 
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
     SwipeRefresh(state = swipeRefreshState, onRefresh = { isRefreshing = true }) {
-        HomeCommunityWorkScrollState = rememberLazyListState()
-        LazyColumn(state = HomeCommunityWorkScrollState!!) {
+        if (vmHomeCommunity.workScrollState == null)
+            vmHomeCommunity.workScrollState = rememberLazyListState()
+        LazyColumn(state = vmHomeCommunity.workScrollState!!) {
             items(list.size) {
                 TopicItem(navCtrl, list[it])
             }
@@ -254,7 +251,7 @@ fun HomeCommunityWork(navCtrl: NavHostController) {
             withContext(Dispatchers.IO) {
                 Thread.sleep(2000)
                 withContext(Dispatchers.Main) {
-                    list.add(0, TopicData(0, false))
+                    list.add(0, TopicData(list.size, 0))
                     isRefreshing = false
                 }
             }
@@ -263,16 +260,17 @@ fun HomeCommunityWork(navCtrl: NavHostController) {
 }
 
 @Composable
-fun HomeCommunityStudent(navCtrl: NavHostController) {
+fun HomeCommunityStudent(navCtrl: NavHostController, vmHomeCommunity: VMHomeCommunity) {
     val list = remember { mutableListOf<TopicData>() }
     for (i in 0..100)
-        list.add(TopicData(i % 3, false))
+        list.add(TopicData(i, i % 3))
 
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
     SwipeRefresh(state = swipeRefreshState, onRefresh = { isRefreshing = true }) {
-        HomeCommunityStudentScrollState = rememberLazyListState()
-        LazyColumn(state = HomeCommunityStudentScrollState!!) {
+        if (vmHomeCommunity.studentScrollState == null)
+            vmHomeCommunity.studentScrollState = rememberLazyListState()
+        LazyColumn(state = vmHomeCommunity.studentScrollState!!) {
             items(list.size) {
                 TopicItem(navCtrl, list[it])
             }
@@ -283,7 +281,7 @@ fun HomeCommunityStudent(navCtrl: NavHostController) {
             withContext(Dispatchers.IO) {
                 Thread.sleep(2000)
                 withContext(Dispatchers.Main) {
-                    list.add(0, TopicData(0, false))
+                    list.add(0, TopicData(list.size, 0))
                     isRefreshing = false
                 }
             }
