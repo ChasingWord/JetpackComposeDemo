@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.compose.engine.ViewAction
 import com.shrimp.compose.screen.main.vm.VMLabel
 import com.shrimp.compose.ui.theme.AppTheme
@@ -37,7 +38,7 @@ fun Label(
     val recommendData = viewStates.pagingData.collectAsLazyPagingItems()
     val isRefreshing = viewStates.isRefreshing
     val listState = if (recommendData.itemCount > 0) viewStates.listState else LazyListState()
-
+    SystemStatusBarTransparent(isShowDarkIcon = true)
     Column(modifier = Modifier.statusBarsPadding()) {
         Toolbar(navCtrl = navCtrl, title = "标签列表页")
 

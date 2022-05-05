@@ -70,7 +70,7 @@ class MediaLoader(var mActivity: FragmentActivity?, var mCallback: IMediaLoaderC
             LoaderManager.getInstance(mActivity!!).initLoader(0, null, this@MediaLoader)
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor?> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         val cursorLoader: CursorLoader
         val contentUri = MediaStore.Files.getContentUri("external")
         val selection: String
@@ -98,8 +98,8 @@ class MediaLoader(var mActivity: FragmentActivity?, var mCallback: IMediaLoaderC
         return cursorLoader
     }
 
-    override fun onLoadFinished(loader: Loader<Cursor?>, data: Cursor?) {
-        if (!mLoadFinished && data != null) {
+    override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor) {
+        if (!mLoadFinished) {
             ThreadPoolUtil.execute(object : ComparableRunnable() {
                 override fun run() {
                     mLoadFinished = true
@@ -214,13 +214,11 @@ class MediaLoader(var mActivity: FragmentActivity?, var mCallback: IMediaLoaderC
     private fun destroy(){
         ThreadPoolUtil.executeOnMainThread {
             // 销毁MediaLoader，不销毁，每次返回界面都会执行一次查询
-            LoaderManager.getInstance(mActivity!!).destroyLoader(0)
+            mActivity?.let { LoaderManager.getInstance(it).destroyLoader(0) }
             mActivity = null
             mCallback = null
         }
     }
 
-    override fun onLoaderReset(loader: Loader<Cursor?>) {}
-
-
+    override fun onLoaderReset(loader: Loader<Cursor>) {}
 }

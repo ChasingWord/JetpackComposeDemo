@@ -28,15 +28,15 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.shrimp.base.utils.L
 import com.shrimp.base.utils.RouteUtils
-import com.shrimp.compose.common.BottomNavRoute
+import com.shrimp.base.widgets.composableWithDefaultAnim
 import com.shrimp.compose.common.RouteName
-import com.shrimp.compose.engine.EventScrollToTop
+import com.shrimp.compose.common.bus_event.EventScrollToTop
 import com.shrimp.compose.screen.main.ui.*
+import com.shrimp.compose.screen.webview.WebPager
 import com.shrimp.compose.ui.theme.AppTheme
 import com.shrimp.compose.ui.theme.color_a6a9ad
 import com.shrimp.compose.ui.theme.color_ff609d
 import com.shrimp.compose.ui.widgets.AppSnackBar
-import com.shrimp.compose.ui.widgets.composableWithDefaultAnim
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -90,7 +90,9 @@ fun Home(activity: ComponentActivity) {
                         color = AppTheme.colors.textPrimary)
                 }
                 composableWithDefaultAnim(RouteName.MINE) {
-                    HomeMine(activity)
+                    HomeMine(navCtrl,
+                        scaffoldState,
+                        activity)
                 }
 
                 composableWithDefaultAnim(
@@ -108,6 +110,14 @@ fun Home(activity: ComponentActivity) {
                     CommunityPersonal(navCtrl,
                         scaffoldState,
                         navBackStackEntry.arguments?.getInt("userId") ?: 0)
+                }
+                composableWithDefaultAnim(
+                    "${RouteName.WEB_VIEW}/{url}",
+                    arguments = listOf(navArgument("url") { type = NavType.StringType }),
+                ) { navBackStackEntry ->
+                    WebPager(navCtrl,
+                        scaffoldState,
+                        navBackStackEntry.arguments?.getString("url") ?: "")
                 }
             }
         },

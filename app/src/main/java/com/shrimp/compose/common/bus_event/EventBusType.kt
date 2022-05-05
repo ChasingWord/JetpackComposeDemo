@@ -1,4 +1,4 @@
-package com.shrimp.compose.engine
+package com.shrimp.compose.common.bus_event
 
 /**
  * Created by chasing on 2022/4/22.
@@ -9,3 +9,5 @@ data class EventScrollToTop(val type: Int) {
         const val TYPE_HOME_COMMUNITY = 1
     }
 }
+
+data class EventTopicPraise(val topicId: Int, val isPraise: Boolean)

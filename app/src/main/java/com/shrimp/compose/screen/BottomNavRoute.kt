@@ -1,7 +1,8 @@
-package com.shrimp.compose.common
+package com.shrimp.compose.screen
 
 import androidx.annotation.StringRes
 import com.shrimp.compose.R
+import com.shrimp.compose.common.RouteName
 
 sealed class BottomNavRoute(
     var routeName: String,

@@ -8,8 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shrimp.compose.bean.TopicData
-import com.shrimp.compose.common.bus_event.TopicPraiseEvent
-import com.shrimp.compose.engine.EventScrollToTop
+import com.shrimp.compose.common.bus_event.EventTopicPraise
+import com.shrimp.compose.common.bus_event.EventScrollToTop
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -63,10 +63,10 @@ class VMHomeCommunity @Inject constructor() : ViewModel() {
     }
 
     @Subscribe
-    fun praise(topicPraiseEvent: TopicPraiseEvent){
+    fun praise(eventTopicPraise: EventTopicPraise){
         for ((index, topicData) in focusData.withIndex()) {
-            if (topicData.id == topicPraiseEvent.topicId){
-                focusData[index] = focusData[index].copy(isPraise = topicPraiseEvent.isPraise)
+            if (topicData.id == eventTopicPraise.topicId){
+                focusData[index] = focusData[index].copy(isPraise = eventTopicPraise.isPraise)
                 break;
             }
         }

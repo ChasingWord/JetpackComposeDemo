@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.shrimp.compose.engine.EventScrollToTop
+import com.shrimp.compose.common.bus_event.EventScrollToTop
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus

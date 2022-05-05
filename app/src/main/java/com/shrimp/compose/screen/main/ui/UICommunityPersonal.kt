@@ -35,6 +35,7 @@ fun CommunityPersonal(
     userId: Int,
     viewModel: VMCommunityPersonal = hiltViewModel(),
 ) {
+    SystemStatusBarTransparent(isShowDarkIcon = true)
     val viewStates = viewModel.viewStates
     val data = viewStates.pagingData.collectAsLazyPagingItems()
     val isRefreshing = viewStates.isRefreshing
@@ -43,7 +44,6 @@ fun CommunityPersonal(
     var scrolledY = 0f
     var previousOffset = 0
 
-    SystemStatusBarTransparent(true)
     RefreshList(data, listState = listState, isRefreshing = isRefreshing, onRefresh = {
         viewModel.dispatch(ViewAction.Refresh)
     }) {

@@ -12,16 +12,8 @@ import kotlin.math.sqrt
  * Created by chasing on 2021/10/22.
  */
 object BitmapUtil {
-    /**
-     * 社区中的图片压缩处理逻辑
-     * 压缩大小：
-     * a、社区中上传的图片宽*高不超过700000平方像素（即按正方形的图片约为836*836px）
-     * a1、如果超过了70W平方像素，则等比例压缩到70w平方像素;
-     * a2、如果没有超过，则按原来是多少就设置成多少.
-     * b、图片大小压缩后一般应该为50k左右，注意应该最大不要超过80k[此规范可以不理会，大小可以多一点。因为后台加水印的时候会再次压缩，后台现在规定是150kb]。
-     * c、社区中的图片精度控制为70.由于不对大小进行控制。此精度是合理的。[在FileUtil.saveAsCompressBitmap()方法进行了压缩操作]
-     */
-    private const val size = 700000 //图片宽*高不超过70w平方像素
+    // 图片宽*高不超过70w平方像素
+    private const val size = 700000
 
     //获取图片尺寸,0为宽，1为高
     fun getPhotoSize(context: Context, path: String): IntArray {
@@ -69,50 +61,56 @@ object BitmapUtil {
     }
 
     //得到Bitmap，宽高积的最大像素不超过size（70w像素）
-    @Throws(IOException::class)
-    fun getBitmapInMaxSize(path: String): Bitmap? {
+    fun getBitmapInMaxSize(context: Context, path: String): Bitmap? {
+        var bitmap: Bitmap? = null
         //取得图片的流
-        var `in` = BufferedInputStream(FileInputStream(File(path)))
-        val options = BitmapFactory.Options()
-        //这个参数代表，不为bitmap分配内存空间，只记录一些该图片的信息（例如图片大小），说白了就是为了内存优化
-        options.inJustDecodeBounds = true
-        options.inPreferredConfig = Bitmap.Config.RGB_565
-        //通过创建图片的方式，取得options的内容（这里就是利用了java的地址传递来赋值）
-        BitmapFactory.decodeStream(`in`, null, options)
-        `in`.close()
-        //生成压缩的图片
-        `in` = BufferedInputStream(FileInputStream(File(path)))
-        //这里之前设置为了true，所以要改为false，否则就创建不出图片
-        options.inJustDecodeBounds = false
-        if (options.outHeight * options.outWidth > size) {
-            //创建值
-            val d = size.toDouble() / (options.outHeight * options.outWidth).toDouble()
-            options.inScaled = true
-            options.inDensity = 1000
-            options.inTargetDensity = (sqrt(d) * 1000).toInt()
-            // will load & resize the image to be 1/inSampleSize dimensions
+        var inputStream = FileUtil.getInputStream(context, path)
+        inputStream?.let {
+            val options = BitmapFactory.Options()
+            //这个参数代表，不为bitmap分配内存空间，只记录一些该图片的信息（例如图片大小），说白了就是为了内存优化
+            options.inJustDecodeBounds = true
+            options.inPreferredConfig = Bitmap.Config.RGB_565
+            //通过创建图片的方式，取得options的内容（这里就是利用了java的地址传递来赋值）
+            BitmapFactory.decodeStream(it, null, options)
+            it.close()
+            //生成压缩的图片
+            inputStream = FileUtil.getInputStream(context, path)
+            inputStream?.let {it2 ->
+                //这里之前设置为了true，所以要改为false，否则就创建不出图片
+                options.inJustDecodeBounds = false
+                if (options.outHeight * options.outWidth > size) {
+                    //创建值
+                    val d = size.toDouble() / (options.outHeight * options.outWidth).toDouble()
+                    options.inScaled = true
+                    options.inDensity = 1000
+                    options.inTargetDensity = (sqrt(d) * 1000).toInt()
+                    // will load & resize the image to be 1/inSampleSize dimensions
+                }
+                bitmap = BitmapFactory.decodeStream(it2, null, options)
+                it2.close()
+            }
         }
-        val bitmap: Bitmap? = BitmapFactory.decodeStream(`in`, null, options)
-        `in`.close()
         return bitmap
     }
 
     //获取规定比例的Bitmap
-    fun getBitmapWithScale(path: String, scale: Int): Bitmap? {
+    fun getBitmapWithScale(context: Context, path: String, scale: Int): Bitmap? {
         var bitmap: Bitmap? = null
-        var `in`: BufferedInputStream? = null
+        var inputStream: InputStream? = null
         try {
-            `in` = BufferedInputStream(FileInputStream(File(path)))
-            val options = BitmapFactory.Options()
-            options.inSampleSize = scale
-            options.inJustDecodeBounds = false
-            options.inPreferredConfig = Bitmap.Config.RGB_565
-            bitmap = BitmapFactory.decodeStream(`in`, null, options)
+            inputStream = FileUtil.getInputStream(context, path)
+            inputStream?.let {
+                val options = BitmapFactory.Options()
+                options.inSampleSize = scale
+                options.inJustDecodeBounds = false
+                options.inPreferredConfig = Bitmap.Config.RGB_565
+                bitmap = BitmapFactory.decodeStream(it, null, options)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
             try {
-                `in`?.close()
+                inputStream?.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -121,7 +119,7 @@ object BitmapUtil {
     }
 
     // 根据原图尺寸及需要的尺寸计算缩放比例
-    fun getCalculateInSampleSize(
+    private fun getCalculateInSampleSize(
         options: BitmapFactory.Options,
         reqWidth: Int,
         reqHeight: Int
@@ -169,7 +167,6 @@ object BitmapUtil {
         allowWidth: Int,
         allowHeight: Int
     ): Bitmap? {
-        //循环压缩直到其大小小于32kb
         val opts = BitmapFactory.Options()
         opts.inJustDecodeBounds = true //设置成了true,不占用内存，只获取bitmap宽高
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
@@ -194,10 +191,9 @@ object BitmapUtil {
         allowWidth: Int,
         allowHeight: Int
     ): Bitmap? {
-        //循环压缩直到其大小小于32kb
         val opts = BitmapFactory.Options()
         opts.inJustDecodeBounds = true //设置成了true,不占用内存，只获取bitmap宽高
-        BitmapFactory.decodeResource(resources, resId)
+        BitmapFactory.decodeResource(resources, resId, opts)
         opts.inPreferredConfig = Bitmap.Config.RGB_565
         opts.inSampleSize = getCalculateInSampleSize(opts, allowWidth, allowHeight)
         opts.inScaled = true
@@ -208,17 +204,13 @@ object BitmapUtil {
         opts.inDensity = (targetDensity * startScale).toInt()
         opts.inTargetDensity = targetDensity
         opts.inJustDecodeBounds = false //这里之前设置为了true，所以要改为false，否则就创建不出图片
-        //Log.e("测试", "" + newBytes.length);
         return BitmapFactory.decodeResource(resources, resId, opts)
     }
 
     // 对Bitmap进行缩放
-    fun getZoomImage(bitmap: Bitmap?, maxSize: Double): Bitmap? {
-        var bitmap = bitmap
-        if (null == bitmap) {
-            return null
-        }
-        if (bitmap.isRecycled) {
+    fun getZoomImage(_bitmap: Bitmap, maxSize: Double): Bitmap? {
+        var bitmap: Bitmap? = _bitmap
+        if (bitmap == null || bitmap.isRecycled) {
             return null
         }
         // 单位：从 Byte 换算成 KB
@@ -231,13 +223,19 @@ object BitmapUtil {
             // 开始压缩：将宽带和高度压缩掉对应的平方根倍
             // 1.保持新的宽度和高度，与bitmap原来的宽高比率一致
             // 2.压缩后达到了最大大小对应的新bitmap，显示效果最好
-            bitmap = getZoomImage(
-                bitmap,
-                bitmap!!.width / sqrt(multiple),
-                bitmap.height / sqrt(multiple)
-            )
-            //currentSize = bitmapToByteArray(bitmap, false).length / 1024;
-            currentSize = (bitmap!!.byteCount / 1024f).toDouble()
+            bitmap?.let { it ->
+                bitmap = getZoomImage(
+                    it,
+                    it.width / sqrt(multiple),
+                    it.height / sqrt(multiple)
+                )
+                bitmap?.let {it2 ->
+                    currentSize = (it2.byteCount / 1024f).toDouble()
+                }
+            }
+            // 数据异常退出
+            if (bitmap == null)
+                break;
         }
         return bitmap
     }

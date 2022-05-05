@@ -12,20 +12,21 @@ object FixMemLeakUtil {
     private var hasField = true
 
     //解决华为InputMethodManager.mLastSrvView造成的内存泄露
-    fun fixLeak(context: Context?) {
-        if (!hasField || context == null) {
+    fun fixLeak(context: Context) {
+        if (!hasField) {
             return
         }
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            ?: return
         val arr = arrayOf("mLastSrvView")
         for (param in arr) {
             try {
                 if (field == null) {
                     field = imm.javaClass.getDeclaredField(param)
                 }
-                field!!.isAccessible = true
-                field!![imm] = null
+                field?.run {
+                    isAccessible = true
+                    this[imm] = null
+                }
             } catch (ignored: Throwable) {
                 hasField = false
             }

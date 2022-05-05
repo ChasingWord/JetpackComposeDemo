@@ -37,7 +37,7 @@ import com.shrimp.base.utils.showToast
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.TopicData
 import com.shrimp.compose.common.RouteName
-import com.shrimp.compose.common.bus_event.TopicPraiseEvent
+import com.shrimp.compose.common.bus_event.EventTopicPraise
 import com.shrimp.compose.ui.theme.AppTheme
 import org.greenrobot.eventbus.EventBus
 
@@ -300,7 +300,7 @@ fun TopicItemFunction(topicData: TopicData) {
             .clickable {
                 EventBus
                     .getDefault()
-                    .post(TopicPraiseEvent(topicData.id, !topicData.isPraise))
+                    .post(EventTopicPraise(topicData.id, !topicData.isPraise))
             }
             .weight(1f)
             .fillMaxHeight(),

@@ -106,7 +106,7 @@ object FileUtil {
 
     private fun deleteSelfDir(dir: File) {
         try {
-            if (null == dir || !dir.exists() || !dir.isDirectory || dir.listFiles() == null) {
+            if (!dir.exists() || !dir.isDirectory || dir.listFiles() == null) {
                 return
             }
             for (file in Objects.requireNonNull(dir.listFiles())) {
@@ -122,7 +122,6 @@ object FileUtil {
 
     // 每次启动应用删除overTime时间前未发送成功的聊天图片及拍照图片
     private fun deleteOverTimeSelfFile(file: File, overTime: Long) {
-        if (file == null) return
         try {
             if (file.exists() && file.isDirectory && file.listFiles() != null) {
                 for (subFile in Objects.requireNonNull(file.listFiles())) {
@@ -209,8 +208,8 @@ object FileUtil {
     }
 
     @SuppressLint("DefaultLocale")
-    fun getDownloadDocumentUri(context: Context, fileName: String): Uri? {
-        var fileName = fileName
+    fun getDownloadDocumentUri(context: Context, _fileName: String): Uri? {
+        var fileName = _fileName
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             //设置保存参数到ContentValues中
             val contentValues = ContentValues()
@@ -403,8 +402,8 @@ object FileUtil {
     // --                    以上为文件夹操作                      --//
     // 判断文件路径对应的文件是否存在，如果存在则通过加"(1)"的形式进行重新创建一个文件不存在的路径进行返回
     @SuppressLint("DefaultLocale")
-    fun judgeFilePath(context: Context, filePath: String): String {
-        var filePath = filePath
+    fun judgeFilePath(context: Context, _filePath: String): String {
+        var filePath = _filePath
         if (exists(context, filePath)) {
             if (filePath.contains("(") && filePath.contains(")") && filePath.lastIndexOf(")") > filePath.lastIndexOf(
                     "("
@@ -644,8 +643,8 @@ object FileUtil {
     }
 
     //得到文件的后缀名并将其转换为小写(不包含'.')
-    fun getFileExtension(url: String): String {
-        var url = url
+    fun getFileExtension(_url: String): String {
+        var url = _url
         if (!TextUtils.isEmpty(url)) {
             url = url.replace("\\", "/")
             val fragment = url.lastIndexOf('#')

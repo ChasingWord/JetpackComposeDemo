@@ -53,14 +53,21 @@ object AppUtil {
      *
      * @return 当前应用的版本id
      */
-    fun getVersionCode(context: Context): Int {
-        var versionCode = 1
+    fun getVersionCode(context: Context): Long {
+        var vc = 1L
         try {
-            versionCode = getPackageInfo(context)!!.versionCode
+            val packageInfo = getPackageInfo(context)
+            packageInfo?.run {
+                vc = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    longVersionCode
+                } else {
+                    versionCode.toLong()
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return versionCode
+        return vc
     }
 
     //获取进程名称

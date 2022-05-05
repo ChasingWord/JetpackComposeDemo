@@ -2,8 +2,6 @@ package com.shrimp.compose.screen.main.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,6 +22,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shrimp.base.utils.SystemStatusBarTransparent
+import com.shrimp.base.widgets.noRippleClickable
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.TopicData
 import com.shrimp.compose.screen.main.vm.VMHomeCommunity
@@ -122,11 +121,8 @@ fun HomeCommunitySingleTab(
     isSelect: Boolean,
     onClick: () -> Unit,
 ) {
-    // 去除点击效果
     Box(modifier = modifier
-        .clickable(onClick = { onClick.invoke() }, indication = null, interactionSource = remember {
-            MutableInteractionSource()
-        })
+        .noRippleClickable(onClick)
         .width(IntrinsicSize.Max),
         contentAlignment = Alignment.Center) {
         Text(text = title,

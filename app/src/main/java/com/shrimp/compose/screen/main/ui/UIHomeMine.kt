@@ -25,13 +25,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.load
 import coil.request.ImageRequest
+import com.shrimp.base.utils.RouteUtils
+import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.base.utils.showToast
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.AppFunInfo
 import com.shrimp.compose.bean.UserInfo
+import com.shrimp.compose.common.RouteName
 import com.shrimp.compose.engine.GlobalInfoManager
 import com.shrimp.compose.screen.main.vm.VMHomeMine
 import com.shrimp.compose.ui.theme.AppTheme
@@ -41,16 +45,18 @@ import com.shrimp.compose.ui.theme.AppTheme
  */
 @Composable
 fun HomeMine(
+    navCtrl: NavHostController,
+    scaffoldState: ScaffoldState,
     activity: ComponentActivity,
     vmHomeMine: VMHomeMine = hiltViewModel(),
 ) {
+    SystemStatusBarTransparent(isShowDarkIcon = true)
     var userInfo by remember { mutableStateOf(UserInfo()) }
     GlobalInfoManager.userInfo.removeObservers(activity)
     GlobalInfoManager.userInfo.observe(activity) {
         userInfo = it.copy()
     }
 
-    val context = LocalContext.current
     LazyColumn(modifier = Modifier.background(color = AppTheme.colors.secondary)) {
         item {
             HomeMineUserInfo(vmHomeMine, userInfo)
@@ -89,7 +95,7 @@ fun HomeMine(
                     fontSize = 14.sp,
                     color = colorResource(id = R.color.color_0fa8eb),
                     modifier = Modifier.clickable {
-                        showToast("官网...")
+                        RouteUtils.navTo(navCtrl, RouteName.WEB_VIEW, "https://www.baidu.com")
                     })
             }
         }

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -24,6 +25,7 @@ import com.shrimp.compose.ui.theme.color_transparent
  */
 private val titleTextSize = 17.sp
 private val functionTextSize = 14.sp
+private val titleHorizontalPadding = 60.dp
 
 @Composable
 fun Toolbar(
@@ -53,8 +55,11 @@ fun Toolbar(
                 .clickable { navCtrl.back() },
             contentScale = ContentScale.Inside)
 
-        Column(modifier = Modifier.align(Alignment.Center)) {
-            Text(text = title, color = AppTheme.colors.textPrimary, fontSize = titleTextSize)
+        Column(modifier = Modifier
+            .align(Alignment.Center)
+            .padding(titleHorizontalPadding, 0.dp)) {
+            Text(text = title, color = AppTheme.colors.textPrimary, fontSize = titleTextSize,
+                maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
@@ -89,8 +94,11 @@ fun Toolbar(
                 .clickable { navCtrl.back() },
             contentScale = ContentScale.Inside)
 
-        Column(modifier = Modifier.align(Alignment.Center)) {
-            Text(text = title, color = AppTheme.colors.textPrimary, fontSize = titleTextSize)
+        Column(modifier = Modifier
+            .align(Alignment.Center)
+            .padding(titleHorizontalPadding, 0.dp)) {
+            Text(text = title, color = AppTheme.colors.textPrimary, fontSize = titleTextSize,
+                maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
 
         Row(modifier = Modifier
@@ -132,8 +140,11 @@ fun Toolbar(
                 .clickable { navCtrl.back() },
             contentScale = ContentScale.Inside)
 
-        Column(modifier = Modifier.align(Alignment.Center)) {
-            Text(text = title, color = AppTheme.colors.textPrimary, fontSize = titleTextSize)
+        Column(modifier = Modifier
+            .align(Alignment.Center)
+            .padding(titleHorizontalPadding, 0.dp)) {
+            Text(text = title, color = AppTheme.colors.textPrimary, fontSize = titleTextSize,
+                maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
 
         Row(modifier = Modifier

@@ -1,4 +1,4 @@
-package com.shrimp.compose.ui.widgets
+package com.shrimp.base.widgets
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -11,12 +11,12 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
-import com.shrimp.compose.common.RouteName
 
 /**
  * Created by chasing on 2022/4/21.
  * 添加默认的界面切换动画，进行判断：
- * 同一个父节点的compose看作是在同一个界面内，不设置界面切换动画
+ * Route同一个前缀的compose看作是在同一个界面内，不设置界面切换动画
+ * 例如：root_main和root_mine，前缀都为“root”，以“_”进行分隔
  */
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.composableWithDefaultAnim(

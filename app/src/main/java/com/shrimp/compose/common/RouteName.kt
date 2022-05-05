@@ -17,4 +17,5 @@ object RouteName {
 
     const val LABEL = "label"
     const val COMMUNITY_PERSONAL = "communityPersonal"
+    const val WEB_VIEW = "webView"
 }
