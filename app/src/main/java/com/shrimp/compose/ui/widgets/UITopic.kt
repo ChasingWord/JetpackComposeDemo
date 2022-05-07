@@ -12,8 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +42,7 @@ import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by chasing on 2022/3/23.
+ * 类似点赞子类的功能，都通过EventBus事件通知VM进行请求刷新
  */
 @Preview
 @Composable
@@ -261,7 +261,7 @@ fun TopicItemLabel(navCtrl: NavHostController) {
                 .border(1.dp, colorResource(id = R.color.color_p10282a2e), RoundedCornerShape(4.dp))
                 .padding(10.dp, 5.dp)
                 .clickable {
-                    RouteUtils.navTo(navCtrl, RouteName.LABEL, 311)
+                    RouteUtils.navTo(navCtrl, RouteName.LABEL)
                 })
         Box(Modifier.width(10.dp))
         Text(text = "标签", fontSize = 12.sp, color = colorResource(id = R.color.color_4b5057),
@@ -269,7 +269,7 @@ fun TopicItemLabel(navCtrl: NavHostController) {
                 .border(1.dp, colorResource(id = R.color.color_p10282a2e), RoundedCornerShape(4.dp))
                 .padding(10.dp, 5.dp)
                 .clickable {
-                    RouteUtils.navTo(navCtrl, RouteName.LABEL, 311)
+                    RouteUtils.navTo(navCtrl, RouteName.LABEL)
                 })
     }
 }
@@ -294,10 +294,12 @@ fun TopicItemFunction(topicData: TopicData) {
             Text(text = "评论", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
 
-        val transY: Float by animateFloatAsState(if (topicData.isPraise) -200f else 0f,
-            animationSpec = tween(durationMillis = if (topicData.isPraise) 2000 else 1))
+        var click by remember { mutableStateOf(0) }
+        val transY: Float by animateFloatAsState(if ((click > 0) and topicData.isPraise) -200f else 0f,
+            animationSpec = tween(durationMillis = if ((click > 0) and topicData.isPraise) 2000 else 1))
         Row(modifier = Modifier
             .clickable {
+                click++
                 EventBus
                     .getDefault()
                     .post(EventTopicPraise(topicData.id, !topicData.isPraise))
@@ -311,7 +313,7 @@ fun TopicItemFunction(topicData: TopicData) {
                     contentDescription = null,
                     modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
 
-                if (topicData.isPraise) {
+                if ((click > 0) and topicData.isPraise) {
                     for (i in 0..5) {
                         val transX = i % 4 * 5
                         val tempTransY = transY * (i % 5 * 0.2 + 1).toFloat()

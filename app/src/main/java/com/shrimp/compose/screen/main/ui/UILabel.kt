@@ -1,9 +1,6 @@
 package com.shrimp.compose.screen.main.ui
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ScaffoldState
@@ -31,7 +28,6 @@ import com.shrimp.compose.ui.widgets.Toolbar
 fun Label(
     navCtrl: NavHostController,
     scaffoldState: ScaffoldState,
-    userId: Int,
     viewModel: VMLabel = hiltViewModel(),
 ) {
     val viewStates = viewModel.viewStates
@@ -40,7 +36,9 @@ fun Label(
     val listState = if (recommendData.itemCount > 0) viewStates.listState else LazyListState()
     SystemStatusBarTransparent(isShowDarkIcon = true)
     Column(modifier = Modifier.statusBarsPadding()) {
-        Toolbar(navCtrl = navCtrl, title = "标签列表页")
+        Toolbar(navCtrl = navCtrl, title = "标签列表页", modifier = Modifier.clickable {
+            viewModel.cancelRequest()
+        })
 
         RefreshList(recommendData, listState = listState, isRefreshing = isRefreshing, onRefresh = {
             viewModel.dispatch(ViewAction.Refresh)

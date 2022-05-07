@@ -95,13 +95,9 @@ fun Home(activity: ComponentActivity) {
                         activity)
                 }
 
-                composableWithDefaultAnim(
-                    "${RouteName.LABEL}/{userId}",
-                    arguments = listOf(navArgument("userId") { type = NavType.IntType }),
-                ) { navBackStackEntry ->
+                composableWithDefaultAnim(RouteName.LABEL) {
                     Label(navCtrl,
-                        scaffoldState,
-                        navBackStackEntry.arguments?.getInt("userId") ?: 0)
+                        scaffoldState)
                 }
                 composableWithDefaultAnim(
                     "${RouteName.COMMUNITY_PERSONAL}/{userId}",

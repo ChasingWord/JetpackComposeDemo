@@ -3,7 +3,6 @@ package com.shrimp.compose.screen.main.ui
 import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -14,7 +13,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -26,12 +24,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
 import coil.load
-import coil.request.ImageRequest
 import com.shrimp.base.utils.RouteUtils
 import com.shrimp.base.utils.SystemStatusBarTransparent
 import com.shrimp.base.utils.showToast
+import com.shrimp.base.widgets.ImageNet
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.AppFunInfo
 import com.shrimp.compose.bean.UserInfo
@@ -121,15 +118,9 @@ fun HomeMineUserInfo(vmHomeMine: VMHomeMine, userInfo: UserInfo) {
             .statusBarsPadding(),
             verticalAlignment = Alignment.CenterVertically) {
             Box {
-                AsyncImage(modifier = Modifier
-                    .clip(CircleShape)
-                    .size(64.dp),
-                    model = ImageRequest.Builder(context)
-                        .data("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01bdd05a436090a80121974142c9f3.gif&refer=http%3A%2F%2Fimg.zcool.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1634225053&t=eaa097d38a32f901b7096fae16bfb98f")
-//                        .data("https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF")
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null)
+                ImageNet(url = "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01bdd05a436090a80121974142c9f3.gif&refer=http%3A%2F%2Fimg.zcool.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1634225053&t=eaa097d38a32f901b7096fae16bfb98f",
+                    shape = CircleShape,
+                    size = 64.dp)
                 Image(painter = painterResource(id = R.mipmap.v_icon), contentDescription = null,
                     Modifier.align(Alignment.BottomEnd))
             }

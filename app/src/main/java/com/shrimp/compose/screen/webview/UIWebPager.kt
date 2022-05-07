@@ -54,7 +54,7 @@ fun WebPager(
                     onError = { request: WebResourceRequest?, error: WebResourceError? ->
                         val requestUrl = request?.url.toString()
                         val errorUrl = webViewState.content.getCurrentUrl().toString()
-                        if (requestUrl.contains(errorUrl)) {
+                        if (requestUrl.contains(errorUrl) or errorUrl.contains(requestUrl)) {
                             errorMsg = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 error?.description?.toString() ?: "网络异常"
                             } else

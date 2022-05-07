@@ -13,6 +13,7 @@ import com.shrimp.compose.util.paging.simplePager
 import com.shrimp.network.RequestManager
 import com.shrimp.network.entity.res.Tags
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -49,6 +50,11 @@ class VMLabel @Inject constructor() : ViewModel() {
 
     private fun refresh() {
         fetchData()
+    }
+
+    fun cancelRequest(){
+        viewModelScope.cancel()
+        viewStates = LabelViewState(pagingData = pager)
     }
 }
 

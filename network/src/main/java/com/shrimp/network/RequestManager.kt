@@ -9,10 +9,7 @@ import com.shrimp.network.entity.res.Tags
  */
 object RequestManager {
 
-    private val mApi: ExampleApi
-        get() {
-            return RetrofitClient._retrofit.create(ExampleApi::class.java)
-        }
+    private val mApi: ExampleApi = RetrofitClient._retrofit.create(ExampleApi::class.java)
 
     suspend fun getCourseTagsMenuByUserId(
         checkCode: String,

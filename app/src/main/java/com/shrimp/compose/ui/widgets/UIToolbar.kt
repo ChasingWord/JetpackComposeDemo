@@ -31,22 +31,25 @@ private val titleHorizontalPadding = 60.dp
 fun Toolbar(
     navCtrl: NavHostController,
     title: String,
+    modifier: Modifier = Modifier,
     backgroundColor: Color = color_transparent,
     isStatusBarPadding: Boolean = false,
 ) {
-    val modifier: Modifier =
+    val curModifier: Modifier =
         if (isStatusBarPadding)
             Modifier
+                .then(modifier)
                 .background(backgroundColor)
                 .statusBarsPadding()
                 .fillMaxWidth()
                 .height(AppTheme.dimen.toolbarHeight)
         else
             Modifier
+                .then(modifier)
                 .fillMaxWidth()
                 .background(backgroundColor)
                 .height(AppTheme.dimen.toolbarHeight)
-    Box(modifier = modifier) {
+    Box(modifier = curModifier) {
         Image(painter = painterResource(id = R.mipmap.arrow_left_60),
             contentDescription = null,
             modifier = Modifier
