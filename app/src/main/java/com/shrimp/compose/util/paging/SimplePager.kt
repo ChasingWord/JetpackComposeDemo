@@ -42,7 +42,7 @@ fun <T : Any> ViewModel.simplePager(
         is HttpResult.Error -> {
             val msg = httpResult.exception.message
             if (!TextUtils.isEmpty(msg) && "cancel" != msg)
-                showToast(httpResult.exception.message)
+                showToast(msg)
             PagingSource.LoadResult.Error(httpResult.exception)
         }
     }

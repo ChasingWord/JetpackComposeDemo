@@ -1,6 +1,7 @@
 package com.shrimp.compose.ui.widgets
 
 import android.R
+import androidx.compose.animation.core.animate
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,17 +11,23 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shrimp.compose.ui.theme.AppTheme
 
@@ -44,7 +51,11 @@ fun <T : Any> RefreshList(
         onRefresh = {
             onRefresh.invoke()
             lazyPagingItems.refresh()
-        }
+        },
+        refreshTriggerDistance = 50.dp, //刷新触发距离
+//        indicator = { s, _ ->
+//            CustomSwipeRefreshIndicator(s)
+//        },
     ) {
         //刷新状态
         rememberSwipeRefreshState.isRefreshing =
@@ -143,5 +154,46 @@ fun LoadingItem() {
                 .padding(10.dp)
                 .height(50.dp)
         )
+    }
+}
+
+@Composable
+fun CustomSwipeRefreshIndicator(
+    state: SwipeRefreshState,
+    refreshingOffset: Dp = 16.dp,
+) {
+    val size = 20.dp
+    val indicatorHeight = with(LocalDensity.current) { size.roundToPx() }
+    val refreshingOffsetPx = with(LocalDensity.current) { refreshingOffset.toPx() }
+    var offset by remember { mutableStateOf(0f) }
+    if (state.isSwipeInProgress) {
+        // If the user is currently swiping, we use the 'slingshot' offset directly
+        offset = state.indicatorOffset
+    } else {
+        // If there's no swipe currently in progress, animate to the correct resting position
+        LaunchedEffect(state.isRefreshing) {
+            animate(
+                initialValue = offset,
+                targetValue = when {
+                    state.isRefreshing -> indicatorHeight + refreshingOffsetPx
+                    else -> 0f
+                }
+            ) { value, _ ->
+                offset = value
+            }
+        }
+    }
+
+    Surface(
+        modifier = Modifier
+            .height(size)
+            .graphicsLayer {
+                // Translate the indicator according to the slingshot
+                translationY = offset - indicatorHeight
+            },
+    ) {
+        // This shows either an Image with CircularProgressPainter or a CircularProgressIndicator,
+        // depending on refresh state
+        Text(text = "更新...", fontSize = 14.sp, color = AppTheme.colors.textPrimary)
     }
 }

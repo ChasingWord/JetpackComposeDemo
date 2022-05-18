@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -39,7 +38,7 @@ fun CommunityPersonal(
     val viewStates = viewModel.viewStates
     val data = viewStates.pagingData.collectAsLazyPagingItems()
     val isRefreshing = viewStates.isRefreshing
-    val listState = if (data.itemCount > 0) viewStates.listState else LazyListState()
+    val listState = viewStates.listState
 
     var scrolledY = 0f
     var previousOffset = 0

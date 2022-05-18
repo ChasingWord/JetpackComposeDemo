@@ -72,3 +72,9 @@ class VMHomeCommunity @Inject constructor() : ViewModel() {
         }
     }
 }
+
+class TestA(val ma:Int){
+    fun te(){
+        ma + 1
+    }
+}

@@ -54,8 +54,8 @@ fun Toolbar(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(AppTheme.dimen.safeSpace, 0.dp)
-                .clickable { navCtrl.back() },
+                .clickable { navCtrl.back() }
+                .padding(AppTheme.dimen.safeSpace, 0.dp),
             contentScale = ContentScale.Inside)
 
         Column(modifier = Modifier
@@ -93,8 +93,8 @@ fun Toolbar(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(AppTheme.dimen.safeSpace, 0.dp)
-                .clickable { navCtrl.back() },
+                .clickable { navCtrl.back() }
+                .padding(AppTheme.dimen.safeSpace, 0.dp),
             contentScale = ContentScale.Inside)
 
         Column(modifier = Modifier
@@ -139,8 +139,8 @@ fun Toolbar(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(AppTheme.dimen.safeSpace, 0.dp)
-                .clickable { navCtrl.back() },
+                .clickable { navCtrl.back() }
+                .padding(AppTheme.dimen.safeSpace, 0.dp),
             contentScale = ContentScale.Inside)
 
         Column(modifier = Modifier

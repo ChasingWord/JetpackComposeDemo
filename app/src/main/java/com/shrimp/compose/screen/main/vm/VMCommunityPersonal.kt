@@ -5,9 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.shrimp.compose.bean.TopicData
 import com.shrimp.compose.engine.ViewAction
 import com.shrimp.compose.util.paging.simplePager
@@ -32,7 +30,7 @@ class VMCommunityPersonal @Inject constructor() : ViewModel() {
                 topicDataList.add(TopicData(i, i % 3))
             responseResult.data = topicDataList
             responseResult
-        }.cachedIn(viewModelScope)
+        }
     }
 
     var viewStates by mutableStateOf(CommunityPersonalViewState(pagingData = pager))

@@ -1,12 +1,17 @@
 package com.shrimp.compose.screen.main.ui
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -14,11 +19,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.shrimp.base.utils.SystemStatusBarTransparent
+import com.shrimp.base.utils.showToast
 import com.shrimp.compose.engine.ViewAction
 import com.shrimp.compose.screen.main.vm.VMLabel
 import com.shrimp.compose.ui.theme.AppTheme
 import com.shrimp.compose.ui.widgets.RefreshList
 import com.shrimp.compose.ui.widgets.Toolbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Created by chasing on 2022/4/15.
@@ -33,12 +42,27 @@ fun Label(
     val viewStates = viewModel.viewStates
     val recommendData = viewStates.pagingData.collectAsLazyPagingItems()
     val isRefreshing = viewStates.isRefreshing
-    val listState = if (recommendData.itemCount > 0) viewStates.listState else LazyListState()
+    val listState = viewStates.listState
     SystemStatusBarTransparent(isShowDarkIcon = true)
     Column(modifier = Modifier.statusBarsPadding()) {
-        Toolbar(navCtrl = navCtrl, title = "标签列表页", modifier = Modifier.clickable {
-            viewModel.cancelRequest()
-        })
+        Toolbar(navCtrl = navCtrl, title = "标签列表页", modifier = Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            listState.scrollToItem(0)
+                            showToast("onDoubleTap")
+                        }
+                    },
+                    onLongPress = { showToast("onLongPress") },
+                    onTap = {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            listState.scrollToItem(0)
+                            showToast("onTap")
+                        }
+                    }
+                )
+            })
 
         RefreshList(recommendData, listState = listState, isRefreshing = isRefreshing, onRefresh = {
             viewModel.dispatch(ViewAction.Refresh)

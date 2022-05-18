@@ -5,15 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.shrimp.compose.engine.ViewAction
 import com.shrimp.compose.util.paging.simplePager
 import com.shrimp.network.RequestManager
 import com.shrimp.network.entity.res.Tags
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -27,7 +24,7 @@ class VMLabel @Inject constructor() : ViewModel() {
         simplePager {
             delay(2000)
             RequestManager.getCourseTagsMenuByUserId("744677", 311)
-        }.cachedIn(viewModelScope)
+        }
     }
 
     var viewStates by mutableStateOf(LabelViewState(pagingData = pager))
@@ -50,11 +47,6 @@ class VMLabel @Inject constructor() : ViewModel() {
 
     private fun refresh() {
         fetchData()
-    }
-
-    fun cancelRequest(){
-        viewModelScope.cancel()
-        viewStates = LabelViewState(pagingData = pager)
     }
 }
 
