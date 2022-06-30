@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +35,7 @@ import com.shrimp.compose.ui.theme.AppTheme
 
 @Composable
 fun <T : Any> RefreshList(
+    modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<T>,
     isRefreshing: Boolean = false,
     onRefresh: (() -> Unit) = {},
@@ -62,7 +65,7 @@ fun <T : Any> RefreshList(
             ((lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing)
         //列表
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             state = listState
         ) {

@@ -15,6 +15,7 @@ object RouteName {
     const val MESSAGE = "root_message"
     const val MINE = "root_mine"
 
+    const val LOGIN = "login"
     const val LABEL = "label"
     const val COMMUNITY_PERSONAL = "communityPersonal"
     const val WEB_VIEW = "webView"

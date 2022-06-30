@@ -94,7 +94,8 @@ fun HomeMain(
         var isRefreshing by remember { mutableStateOf(false) }
         val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
         SwipeRefresh(state = swipeRefreshState, onRefresh = { isRefreshing = true }) {
-            vmHomeMain.scrollState = rememberLazyListState()
+            if (vmHomeMain.scrollState == null)
+                vmHomeMain.scrollState = rememberLazyListState()
             LazyColumn(modifier = Modifier.nestedScroll(nestedScrollConnection),
                 state = vmHomeMain.scrollState!!) {
                 item {
@@ -182,9 +183,9 @@ fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean, vmHomeMain: VMHo
                     })) {
                 Image(painter = painterResource(
                     id = if (isBlackType)
-                        R.mipmap.search_black_57x54
+                        R.drawable.search_black_57x54
                     else
-                        R.mipmap.search_57x54),
+                        R.drawable.search_57x54),
                     contentDescription = null,
                     modifier = Modifier.padding(10.dp, 0.dp))
                 Text(text = vmHomeMain.searchHint, fontSize = 13.sp,
@@ -199,9 +200,9 @@ fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean, vmHomeMain: VMHo
                 modifier = subModifier.padding(11.dp, 0.dp)) {
                 Image(painter = painterResource(
                     id = if (isBlackType)
-                        R.mipmap.home_main_label_black
+                        R.drawable.home_main_label_black
                     else
-                        R.mipmap.home_main_label),
+                        R.drawable.home_main_label),
                     contentDescription = null,
                     modifier = Modifier.padding(0.dp, 0.dp, 2.dp, 0.dp))
                 Text(text = "分类", fontSize = 13.sp,
@@ -219,10 +220,10 @@ fun HomeMainSearchBar(modifier: Modifier, isBlackType: Boolean, vmHomeMain: VMHo
 @Composable
 fun HomeMainAdvBanner() {
     val bannerInfoList = ArrayList<BannerInfo>()
-    bannerInfoList.add(BannerInfo(R.mipmap.banner_1))
-    bannerInfoList.add(BannerInfo(R.mipmap.banner_2))
-    bannerInfoList.add(BannerInfo(R.mipmap.banner_3))
-    bannerInfoList.add(BannerInfo(R.mipmap.banner_4))
+    bannerInfoList.add(BannerInfo(R.drawable.banner_1))
+    bannerInfoList.add(BannerInfo(R.drawable.banner_2))
+    bannerInfoList.add(BannerInfo(R.drawable.banner_3))
+    bannerInfoList.add(BannerInfo(R.drawable.banner_4))
 
     Banner(bannerInfoList = bannerInfoList, bannerHeight = 234.dp)
 }
@@ -231,9 +232,9 @@ fun HomeMainAdvBanner() {
 fun HomeMainChannel(scaffoldState: ScaffoldState) {
     Row(modifier = Modifier.padding(0.dp, 10.dp)) {
         val titleList = listOf("学习", "教程", "资源", "发现", "王座杯")
-        val imgList = listOf(R.mipmap.home_channel_learn, R.mipmap.home_channel_course,
-            R.mipmap.home_channel_resource, R.mipmap.home_channel_find,
-            R.mipmap.home_channel_throne_cup)
+        val imgList = listOf(R.drawable.home_channel_learn, R.drawable.home_channel_course,
+            R.drawable.home_channel_resource, R.drawable.home_channel_find,
+            R.drawable.home_channel_throne_cup)
         val modifier = Modifier.weight(1f)
         for (index in titleList.indices) {
             HomeMainChannelSingle(modifier = modifier, imgList[index], titleList[index]) {
@@ -322,7 +323,7 @@ fun HomeMainHottestCourse() {
                         courseList[index * 2 + 1])
                 }
                 if (index == 0) {
-                    val imageBitmap = ImageBitmap.imageResource(id = R.mipmap.icon_work_pass)
+                    val imageBitmap = ImageBitmap.imageResource(id = R.drawable.icon_work_pass)
                     Canvas(modifier = Modifier.align(Alignment.TopEnd)) {
                         drawImage(image = imageBitmap,
                             topLeft = Offset(-imageBitmap.width - 20.dp.toPx(),
@@ -342,7 +343,7 @@ fun HomeMainHottestCourseSingle(modifier: Modifier, courseInfo: CourseInfo) {
             .fillMaxWidth()
             .aspectRatio(161 / 102f),
             model = courseInfo.imgUrl, contentDescription = null,
-            error = painterResource(id = R.mipmap.default_pic),
+            error = painterResource(id = R.drawable.default_pic),
             contentScale = ContentScale.Crop)
         Text(text = courseInfo.title,
             fontSize = 15.sp,
@@ -375,7 +376,7 @@ fun HomeMainResource() {
                 modifier = Modifier.weight(1f))
 
             Text(text = "更多", fontSize = 12.sp, color = AppTheme.colors.textSecondary)
-            Image(painter = painterResource(id = R.mipmap.arrow_right_36),
+            Image(painter = painterResource(id = R.drawable.arrow_right_36),
                 contentDescription = null)
         }
 
@@ -445,7 +446,7 @@ fun HomeMainResourceSingle(modifier: Modifier, resourceInfo: ResourceInfo) {
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(4.dp)),
             model = resourceInfo.imgUrl, contentDescription = null,
-            error = painterResource(id = R.mipmap.default_pic))
+            error = painterResource(id = R.drawable.default_pic))
         Column(modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 0.dp)) {
             Text(text = resourceInfo.title,
                 fontSize = 14.sp,

@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.NonNull
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 /**
  * Created by chasing on 2021/10/22.
@@ -200,3 +202,9 @@ object GenericTools {
         }
     }
 }
+
+fun Int.toDp(context: Context): Dp = GenericTools.px2dip(context, this.toFloat()).dp
+
+fun Float.toDp(context: Context): Dp = GenericTools.px2dip(context, this).dp
+
+fun Double.toDp(context: Context): Dp = GenericTools.px2dip(context, this.toFloat()).dp

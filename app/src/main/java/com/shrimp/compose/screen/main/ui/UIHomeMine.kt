@@ -36,6 +36,7 @@ import com.shrimp.compose.common.RouteName
 import com.shrimp.compose.engine.GlobalInfoManager
 import com.shrimp.compose.screen.main.vm.VMHomeMine
 import com.shrimp.compose.ui.theme.AppTheme
+import com.shrimp.compose.ui.theme.color_transparent
 
 /**
  * Created by chasing on 2022/3/22.
@@ -104,9 +105,8 @@ private lateinit var vipBgImageView: ImageView
 
 @Composable
 fun HomeMineUserInfo(vmHomeMine: VMHomeMine, userInfo: UserInfo) {
-    val context = LocalContext.current
     Box {
-        Image(painter = painterResource(id = R.mipmap.personal_top_bg),
+        Image(painter = painterResource(id = R.drawable.personal_top_bg),
             contentDescription = "顶部背景图",
             modifier = Modifier
                 .fillMaxWidth()
@@ -121,7 +121,7 @@ fun HomeMineUserInfo(vmHomeMine: VMHomeMine, userInfo: UserInfo) {
                 ImageNet(url = "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01bdd05a436090a80121974142c9f3.gif&refer=http%3A%2F%2Fimg.zcool.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1634225053&t=eaa097d38a32f901b7096fae16bfb98f",
                     shape = CircleShape,
                     size = 64.dp)
-                Image(painter = painterResource(id = R.mipmap.v_icon), contentDescription = null,
+                Image(painter = painterResource(id = R.drawable.v_icon), contentDescription = null,
                     Modifier.align(Alignment.BottomEnd))
             }
             Column(Modifier
@@ -174,7 +174,7 @@ fun HomeMineUserInfo(vmHomeMine: VMHomeMine, userInfo: UserInfo) {
                     fontSize = 14.sp,
                     color = colorResource(id = R.color.white),
                     modifier = Modifier.offset((-4).dp, 0.dp))
-                Icon(painter = painterResource(id = R.mipmap.arrow_right_white_14x34),
+                Icon(painter = painterResource(id = R.drawable.arrow_right_white_14x34),
                     contentDescription = "arrow", tint = colorResource(id = R.color.white))
             }
         }
@@ -221,7 +221,7 @@ fun HomeMineDynamicInfo(userInfo: UserInfo) {
             modifier = Modifier
                 .weight(1f)
                 .padding(0.dp, 10.dp)) {
-            Image(painter = painterResource(id = R.mipmap.personal_coupon),
+            Image(painter = painterResource(id = R.drawable.personal_coupon),
                 contentDescription = "卡券包",
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp))
             Text(text = "卡券包", fontSize = 11.sp, color = colorResource(id = R.color.color_aeaeae))
@@ -232,20 +232,20 @@ fun HomeMineDynamicInfo(userInfo: UserInfo) {
 @Composable
 fun HomeMineResourceFun() {
     Row {
-        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_publish, name = "我发布的"){
+        HomeMineResourceFunSingle(resId = R.drawable.personal_my_publish, name = "我发布的") {
             showToast("我发布的")
         }
-        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_bought, name = "我买到的"){
+        HomeMineResourceFunSingle(resId = R.drawable.personal_my_bought, name = "我买到的") {
             showToast("我买到的")
         }
-        HomeMineResourceFunSingle(resId = R.mipmap.personal_my_sale, name = "我卖出的"){
+        HomeMineResourceFunSingle(resId = R.drawable.personal_my_sale, name = "我卖出的") {
             showToast("我卖出的")
         }
     }
 }
 
 @Composable
-fun RowScope.HomeMineResourceFunSingle(resId: Int, name: String, clickListener: ()->Unit) {
+fun RowScope.HomeMineResourceFunSingle(resId: Int, name: String, clickListener: () -> Unit) {
     Column(modifier = Modifier
         .weight(1f)
         .clickable {
@@ -268,7 +268,7 @@ fun HomeMineEarnMoneyInfo() {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    painter = painterResource(id = R.mipmap.personal_earn),
+                    painter = painterResource(id = R.drawable.personal_earn),
                     contentDescription = null
                 )
                 Text(text = "邀请赚钱",
@@ -281,7 +281,7 @@ fun HomeMineEarnMoneyInfo() {
                     color = colorResource(id = R.color.color_aeaeae),
                     modifier = Modifier.padding(8.dp, 0.dp))
                 Image(
-                    painter = painterResource(id = R.mipmap.arrow_right_gray_22x50),
+                    painter = painterResource(id = R.drawable.arrow_right_gray_22x50),
                     contentDescription = null
                 )
             }
@@ -291,7 +291,7 @@ fun HomeMineEarnMoneyInfo() {
                     shape = RoundedCornerShape(4.dp))
                 .padding(AppTheme.dimen.safeSpace, 10.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                Image(painter = painterResource(id = R.mipmap.personal_invitation_icon),
+                Image(painter = painterResource(id = R.drawable.personal_invitation_icon),
                     contentDescription = null)
                 Column(modifier = Modifier
                     .weight(1f)
@@ -308,9 +308,9 @@ fun HomeMineEarnMoneyInfo() {
                 }, border = BorderStroke(1.dp, colorResource(id = R.color.color_ff609d)),
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        backgroundColor = colorResource(id = R.color.transparent),
-                        contentColor = colorResource(id = R.color.transparent),
-                        disabledContentColor = colorResource(id = R.color.transparent))) {
+                        backgroundColor = color_transparent,
+                        contentColor = color_transparent,
+                        disabledContentColor = color_transparent)) {
                     Text(text = "复制邀请码", color = colorResource(id = R.color.color_ff609d),
                         fontSize = 13.sp)
                 }
@@ -328,17 +328,17 @@ fun HomeMineAppFun() {
             .fillMaxWidth()
             .padding(AppTheme.dimen.safeSpace, 0.dp, AppTheme.dimen.safeSpace, 10.dp)) {
         val list = mutableListOf<AppFunInfo>()
-        list.add(AppFunInfo("活跃度积分", R.mipmap.personal_integral))
-        list.add(AppFunInfo("活跃度等级", R.mipmap.personal_activity_level))
-        list.add(AppFunInfo("学霸助手", R.mipmap.personal_helper))
-        list.add(AppFunInfo("我的学币", R.mipmap.personal_coin, "2222"))
-        list.add(AppFunInfo("浏览记录", R.mipmap.personal_browser_history))
-        list.add(AppFunInfo("我的求职", R.mipmap.personal_job))
-        list.add(AppFunInfo("我发布的项目", R.mipmap.personal_publish_project))
-        list.add(AppFunInfo("投诉/售后", R.mipmap.personal_sale_service))
-        list.add(AppFunInfo("我的简历", R.mipmap.personal_resume))
-        list.add(AppFunInfo("我的收藏", R.mipmap.personal_collect))
-        list.add(AppFunInfo("我的设置", R.mipmap.personal_setting))
+        list.add(AppFunInfo("活跃度积分", R.drawable.personal_integral))
+        list.add(AppFunInfo("活跃度等级", R.drawable.personal_activity_level))
+        list.add(AppFunInfo("学霸助手", R.drawable.personal_helper))
+        list.add(AppFunInfo("我的学币", R.drawable.personal_coin, "2222"))
+        list.add(AppFunInfo("浏览记录", R.drawable.personal_browser_history))
+        list.add(AppFunInfo("我的求职", R.drawable.personal_job))
+        list.add(AppFunInfo("我发布的项目", R.drawable.personal_publish_project))
+        list.add(AppFunInfo("投诉/售后", R.drawable.personal_sale_service))
+        list.add(AppFunInfo("我的简历", R.drawable.personal_resume))
+        list.add(AppFunInfo("我的收藏", R.drawable.personal_collect))
+        list.add(AppFunInfo("我的设置", R.drawable.personal_setting))
         Column {
             for (index in 0 until list.size / 3)
                 Row(modifier = Modifier.fillMaxWidth()) {

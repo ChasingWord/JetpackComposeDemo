@@ -36,6 +36,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
     }
+    namespace 'com.shrimp.base'
 }
 
 dependencies {
@@ -43,20 +44,22 @@ dependencies {
     api depend["core"]
     api depend["appcompat"]
     api depend["material"]
-    testImplementation depend["junit"]
-    androidTestImplementation depend["testJunit"]
-    androidTestImplementation depend["testEspresso"]
+    testApi depend["junit"]
+    androidTestApi depend["testJunit"]
+    androidTestApi depend["testEspresso"]
 
-    androidTestImplementation depend["composeTestEspresso"]
+    androidTestApi depend["composeTestEspresso"]
     api depend["composeUI"]
     api depend["composeMaterial"]
     api depend["composeUIToolingPreview"]
-    debugImplementation depend["composeUITooling"]
+    debugApi depend["composeUITooling"]
     api depend["composeLiveData"]
     api depend["composeNavigation"]
     api depend["composeConstraintlayout"]
+    api depend["material3"]
+    api depend["material3WindowSize"]
 
-    implementation depend["exifinterface"]
+    api depend["exifinterface"]
     api depend["activity"]
     api depend["eventBus"]
 
@@ -64,12 +67,13 @@ dependencies {
     api depend["coilGif"]
     api depend["coilVideo"]
     api depend["coilCompose"]
+    api depend["coilSvg"]
 
     api depend["lifecycleRuntime"]
-    api depend["lifecycle"]
     api depend["lifecycleVM"]
-    api depend["lifecycleLD"]
+    api depend["lifecycleVMCompose"]
     api depend["lifecycleVMSaveState"]
+    api depend["lifecycleLD"]
     kapt depend["lifecycleCompiler"]
     // 替代SP
     api depend["datastore"]

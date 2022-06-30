@@ -58,7 +58,7 @@ fun HomeCommunity(
                     shape = RoundedCornerShape(15.dp))
                 .height(31.dp)
             Row(modifier = modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                Image(painter = painterResource(R.mipmap.search_black_57x54),
+                Image(painter = painterResource(R.drawable.search_black_57x54),
                     contentDescription = null,
                     modifier = Modifier.padding(10.dp, 0.dp))
                 Text(
@@ -70,7 +70,7 @@ fun HomeCommunity(
             Box(modifier = Modifier.width(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier.padding(11.dp, 0.dp)) {
-                Image(painter = painterResource(R.mipmap.icon_question_54),
+                Image(painter = painterResource(R.drawable.icon_question_54),
                     contentDescription = null,
                     modifier = Modifier.padding(0.dp, 0.dp, 2.dp, 0.dp))
                 Text(text = "玩法", fontSize = 13.sp,

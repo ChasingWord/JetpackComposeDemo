@@ -39,6 +39,6 @@ fun Start() {
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-        Image(painter = painterResource(id = R.mipmap.start_info), contentDescription = null)
+        Image(painter = painterResource(id = R.drawable.start_info), contentDescription = null)
     }
 }

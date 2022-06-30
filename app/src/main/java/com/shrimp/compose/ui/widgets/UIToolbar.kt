@@ -50,7 +50,7 @@ fun Toolbar(
                 .background(backgroundColor)
                 .height(AppTheme.dimen.toolbarHeight)
     Box(modifier = curModifier) {
-        Image(painter = painterResource(id = R.mipmap.arrow_left_60),
+        Image(painter = painterResource(id = R.drawable.arrow_left_60),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight()
@@ -89,7 +89,7 @@ fun Toolbar(
                 .background(backgroundColor)
                 .height(AppTheme.dimen.toolbarHeight)
     Box(modifier = modifier) {
-        Image(painter = painterResource(id = R.mipmap.arrow_left_60),
+        Image(painter = painterResource(id = R.drawable.arrow_left_60),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight()
@@ -135,7 +135,7 @@ fun Toolbar(
                 .background(backgroundColor)
                 .height(AppTheme.dimen.toolbarHeight)
     Box(modifier = modifier) {
-        Image(painter = painterResource(id = R.mipmap.arrow_left_60),
+        Image(painter = painterResource(id = R.drawable.arrow_left_60),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight()

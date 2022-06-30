@@ -11,8 +11,6 @@ import androidx.navigation.NavHostController
  */
 object RouteUtils {
 
-    const val STEAD_SYMBOL = "^0^"
-
     //初始化Bundle参数
     fun initBundle(params: Parcelable) = Bundle().apply { putParcelable(ARGS, params) }
 
@@ -33,10 +31,10 @@ object RouteUtils {
         即如果是同一级的compose则跳转时backStackRouteName传入当前加载的compose路径(route)且isInclusive设为true
         A -> B   A切换到B时传入A，且isInclusive设为true，则点击返回键时不会回退到A，而是A之前的一个compose
          */
-        isInclusive:Boolean = false,
+        isInclusive: Boolean = false,
         isLaunchSingleTop: Boolean = true,
-        //切换状态的时候保存页面状态
-        needToRestoreState: Boolean = true,
+        // 跳转时，是否保持当前视图状态
+        isSaveState: Boolean = true,
     ) {
         var singleArgument = ""
         if (args != null) {
@@ -46,7 +44,6 @@ object RouteUtils {
 //                }
                 is String -> {
                     singleArgument = String.format("/%s", Uri.encode(args))
-//                    singleArgument = String.format("/%s", args)
                 }
                 is Int -> {
                     singleArgument = String.format("/%s", args)
@@ -69,12 +66,12 @@ object RouteUtils {
         navCtrl.navigate("$destinationName$singleArgument") {
             if (backStackRouteName != null) {
                 popUpTo(backStackRouteName) {
-                    saveState = true
+                    saveState = isSaveState
                     inclusive = isInclusive
                 }
             }
             launchSingleTop = isLaunchSingleTop
-            restoreState = needToRestoreState
+            restoreState = isSaveState
         }
     }
 

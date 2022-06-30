@@ -31,6 +31,8 @@ import com.shrimp.base.utils.RouteUtils
 import com.shrimp.base.widgets.composableWithDefaultAnim
 import com.shrimp.compose.common.RouteName
 import com.shrimp.compose.common.bus_event.EventScrollToTop
+import com.shrimp.compose.engine.GlobalInfoManager
+import com.shrimp.compose.screen.login.ui.Login
 import com.shrimp.compose.screen.main.ui.*
 import com.shrimp.compose.screen.webview.WebPager
 import com.shrimp.compose.ui.theme.AppTheme
@@ -95,6 +97,11 @@ fun Home(activity: ComponentActivity) {
                         activity)
                 }
 
+                composableWithDefaultAnim(RouteName.LOGIN) {
+                    Login(navCtrl,
+                        scaffoldState)
+                }
+
                 composableWithDefaultAnim(RouteName.LABEL) {
                     Label(navCtrl,
                         scaffoldState)
@@ -107,6 +114,7 @@ fun Home(activity: ComponentActivity) {
                         scaffoldState,
                         navBackStackEntry.arguments?.getInt("userId") ?: 0)
                 }
+
                 composableWithDefaultAnim(
                     "${RouteName.WEB_VIEW}/{url}",
                     arguments = listOf(navArgument("url") { type = NavType.StringType }),
@@ -159,10 +167,13 @@ fun BottomNavBarView(navCtrl: NavHostController) {
                     L.i("BottomNavView当前路由 ===> ${currentDestination?.hierarchy?.toList()}")
                     L.i("当前路由栈 ===> ${navCtrl.graph.nodes}")
                     if (currentDestination?.route != screen.routeName) {
-                        RouteUtils.navTo(navCtrl,
-                            screen.routeName,
-                            backStackRouteName = currentDestination?.route,
-                            isInclusive = true)
+                        if (GlobalInfoManager.userInfo.value?.hadLogin == true)
+                            RouteUtils.navTo(navCtrl,
+                                screen.routeName,
+                                backStackRouteName = currentDestination?.route,
+                                isInclusive = true)
+                        else
+                            RouteUtils.navTo(navCtrl, RouteName.LOGIN)
                     } else {
                         when (screen.routeName) {
                             RouteName.HOME -> EventBus.getDefault()

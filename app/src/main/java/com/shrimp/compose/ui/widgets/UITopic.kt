@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -33,6 +34,7 @@ import coil.compose.AsyncImage
 import com.shrimp.base.utils.GenericTools
 import com.shrimp.base.utils.RouteUtils
 import com.shrimp.base.utils.showToast
+import com.shrimp.base.utils.toDp
 import com.shrimp.compose.R
 import com.shrimp.compose.bean.TopicData
 import com.shrimp.compose.common.RouteName
@@ -88,15 +90,15 @@ fun TopicItemUserInfo(navCtrl: NavHostController, topicData: TopicData) {
             .size(31.dp)
             .clip(CircleShape)
             .clickable { RouteUtils.navTo(navCtrl, RouteName.COMMUNITY_PERSONAL, 311) },
-            painter = painterResource(id = R.mipmap.default_pic), contentDescription = null)
+            painter = painterResource(id = R.drawable.default_pic), contentDescription = null)
         Column(modifier = Modifier
             .weight(1f)
             .padding(10.dp, 0.dp)) {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "昵称",
                     fontSize = 13.sp,
                     color = AppTheme.colors.textPrimary)
-                Image(painter = painterResource(id = R.mipmap.lv_1),
+                Image(painter = painterResource(id = R.drawable.lv_1),
                     contentDescription = null,
                     modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp))
             }
@@ -123,9 +125,9 @@ fun TopicItemImgInfo(imgList: List<String>) {
     if (imgList.isNotEmpty()) {
         val countOfSingleRow = if (imgList.size == 4) 2 else 3
         val screenWidth = GenericTools.getScreenWidth(LocalContext.current)
-        var width: Int
+        var width: Dp
         with(LocalDensity.current) {
-            width = GenericTools.px2dip(LocalContext.current, screenWidth - 34.dp.toPx())
+            width = (screenWidth - 34.dp.toPx()).toDp(LocalContext.current)
         }
         for (index in 0..imgList.size / countOfSingleRow) {
             Row(Modifier.padding(AppTheme.dimen.safeSpace,
@@ -139,7 +141,7 @@ fun TopicItemImgInfo(imgList: List<String>) {
                                 0.dp,
                                 0.dp,
                                 0.dp)
-                            .width(width.dp)
+                            .width(width)
                             .aspectRatio(1f))
                 }
             }
@@ -161,7 +163,7 @@ fun TopicItemResource() {
         .background(color = colorResource(id = R.color.color_f6f8fa),
             shape = RoundedCornerShape(4.dp))) {
         Box {
-            Image(painter = painterResource(id = R.mipmap.default_pic_deep),
+            Image(painter = painterResource(id = R.drawable.default_pic_deep),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -229,7 +231,7 @@ fun TopicItemNews() {
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth())
             }
-            Image(painter = painterResource(id = R.mipmap.default_pic_deep),
+            Image(painter = painterResource(id = R.drawable.default_pic_deep),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -281,7 +283,7 @@ fun TopicItemFunction(topicData: TopicData) {
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()) {
-            Image(painter = painterResource(id = R.mipmap.forward), contentDescription = null,
+            Image(painter = painterResource(id = R.drawable.forward), contentDescription = null,
                 modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
             Text(text = "转发", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
@@ -289,7 +291,7 @@ fun TopicItemFunction(topicData: TopicData) {
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()) {
-            Image(painter = painterResource(id = R.mipmap.comment), contentDescription = null,
+            Image(painter = painterResource(id = R.drawable.comment), contentDescription = null,
                 modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
             Text(text = "评论", fontSize = 13.sp, color = AppTheme.colors.textPrimary)
         }
@@ -309,7 +311,7 @@ fun TopicItemFunction(topicData: TopicData) {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically) {
             Box {
-                Image(painter = painterResource(id = if (topicData.isPraise) R.mipmap.praise_pink else R.mipmap.praise),
+                Image(painter = painterResource(id = if (topicData.isPraise) R.drawable.praise_pink else R.drawable.praise),
                     contentDescription = null,
                     modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
 
@@ -319,7 +321,7 @@ fun TopicItemFunction(topicData: TopicData) {
                         val tempTransY = transY * (i % 5 * 0.2 + 1).toFloat()
                         if (tempTransY > -190f)
                             Image(
-                                painter = painterResource(id = R.mipmap.icon_like),
+                                painter = painterResource(id = R.drawable.icon_like),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .offset(transX.dp, 0.dp)

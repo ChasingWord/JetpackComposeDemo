@@ -326,7 +326,7 @@ object ActivityUtil {
             //向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合：  requires VIBRATE permission
             .setDefaults(if (needSound) Notification.DEFAULT_ALL else Notification.DEFAULT_LIGHTS)
             .setSmallIcon(R.drawable.shrimp_channel_icon)
-        //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.nlargelogo));
+        //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.nlargelogo));
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             notificationId,

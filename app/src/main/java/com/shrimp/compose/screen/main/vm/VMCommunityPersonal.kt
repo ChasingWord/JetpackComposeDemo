@@ -22,7 +22,7 @@ import javax.inject.Inject
 class VMCommunityPersonal @Inject constructor() : ViewModel() {
     private val pager by lazy {
         simplePager {
-            delay(2000)
+            delay(500)
             val responseResult = ResponseResult<List<TopicData>>()
             responseResult.code = "00"
             val topicDataList = ArrayList<TopicData>()

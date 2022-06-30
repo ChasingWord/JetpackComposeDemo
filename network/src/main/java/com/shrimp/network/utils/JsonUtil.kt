@@ -6,27 +6,15 @@ import com.google.gson.reflect.TypeToken
 /**
  * Created by chasing on 2021/11/11.
  */
-object JsonUtil {
+val gson = Gson()
+fun Any.toJsonString(): String {
+    return gson.toJson(this)
+}
 
-    val gson = Gson()
-
-    inline fun <reified T> fromJson(jsonString: String): T? {
-        return try {
-            gson.fromJson(jsonString, T::class.java)
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    fun <T> fromJsonList(jsonString: String, token: TypeToken<List<T>>): List<T>? {
-        return try {
-            gson.fromJson(jsonString, token.type)
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    fun toJson(obj: Any): String {
-        return gson.toJson(obj)
+fun <T> String.toJsonObject(token: TypeToken<List<T>>): List<T>? {
+    return try {
+        gson.fromJson(this, token.type)
+    } catch (e: Exception) {
+        null
     }
 }

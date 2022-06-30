@@ -29,9 +29,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.shrimp.network'
 }
 
 dependencies {
+    testApi depend["junit"]
+    androidTestApi depend["testJunit"]
     implementation project(':base')
 
     //retrofit + okHttp3

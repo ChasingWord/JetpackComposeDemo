@@ -8,8 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="transparent">#00000000</color>
-    <color name="shield_color">#1aff5252</color>
 
     <color name="p05_transition">#0d000000</color>
     <color name="p10_transition">#1A000000</color>

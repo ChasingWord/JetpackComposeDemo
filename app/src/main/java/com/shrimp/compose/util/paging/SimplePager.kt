@@ -19,7 +19,7 @@ fun <T : Any> ViewModel.simplePager(
     val httpResult = try {
         val responseResult = callAction.invoke(page)
         if (responseResult.isSuccess())
-            HttpResult.Success(callAction.invoke(page))
+            HttpResult.Success(responseResult)
         else
             HttpResult.Error(Exception(responseResult.getErrorMsg()))
     } catch (e: Exception) {

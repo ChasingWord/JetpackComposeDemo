@@ -64,7 +64,7 @@ fun Label(
                 )
             })
 
-        RefreshList(recommendData, listState = listState, isRefreshing = isRefreshing, onRefresh = {
+        RefreshList(lazyPagingItems = recommendData, listState = listState, isRefreshing = isRefreshing, onRefresh = {
             viewModel.dispatch(ViewAction.Refresh)
         }) {
             val step = 3

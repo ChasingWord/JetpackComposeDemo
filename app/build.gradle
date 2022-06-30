@@ -47,9 +47,12 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    namespace 'com.shrimp.compose'
 }
 
 dependencies {
+    testApi depend["junit"]
+    androidTestApi depend["testJunit"]
     implementation project(':base')
     implementation project(':network')
 

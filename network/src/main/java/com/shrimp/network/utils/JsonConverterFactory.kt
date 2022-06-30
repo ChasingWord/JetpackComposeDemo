@@ -1,6 +1,5 @@
 package com.shrimp.network.utils
 
-import androidx.annotation.NonNull
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.RequestBody
@@ -13,7 +12,7 @@ import java.lang.reflect.Type
  * Created by chasing on 2021/10/21.
  */
 class JsonConverterFactory private constructor(private val gson: Gson) : Converter.Factory() {
-    companion object{
+    companion object {
         fun create(): JsonConverterFactory {
             return JsonConverterFactory(Gson())
         }
@@ -21,10 +20,10 @@ class JsonConverterFactory private constructor(private val gson: Gson) : Convert
 
     // type对应的是RequestBody的类型
     override fun requestBodyConverter(
-        @NonNull type: Type?,
-        @NonNull parameterAnnotations: Array<Annotation?>?,
-        @NonNull methodAnnotations: Array<Annotation?>?,
-        @NonNull retrofit: Retrofit?
+        type: Type,
+        parameterAnnotations: Array<out Annotation>,
+        methodAnnotations: Array<out Annotation>,
+        retrofit: Retrofit,
     ): Converter<*, RequestBody> {
         val adapter = gson.getAdapter(TypeToken.get(type))
         return GsonRequestBodyConverter(gson, adapter)
@@ -32,9 +31,9 @@ class JsonConverterFactory private constructor(private val gson: Gson) : Convert
 
     // type对应的是Deffer<T>里面的T类型
     override fun responseBodyConverter(
-        @NonNull type: Type?,
-        @NonNull annotations: Array<Annotation?>?,
-        @NonNull retrofit: Retrofit?
+        type: Type,
+        annotations: Array<out Annotation>,
+        retrofit: Retrofit,
     ): Converter<ResponseBody, *> {
         return JsonResponseBodyConverter(gson.getAdapter(TypeToken.get(type)))
     }
